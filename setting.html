@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>UIU Research Portal - Settings</title>
+  <link rel="stylesheet" href="setting.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+</head>
+<body>
+
+  <header class="navbar">
+    <div class="nav-left">
+      <div class="logo">
+        <i class="fa-solid fa-graduation-cap"></i>
+        <span>UIU Research Portal</span>
+      </div>
+    </div>
+    
+    <div class="nav-right">
+      <a href="User_dashboard.html" class="nav-item"><i class="fa-solid fa-border-all"></i> Dashboard</a>
+      <a href="research-exploer1.html" class="nav-item"><i class="fa-solid fa-book-open"></i> Research</a>
+      <a href="Project.html" class="nav-item"><i class="fa-solid fa-folder"></i> Projects</a>
+      <a href="Community_Forum.html" class="nav-item"><i class="fa-regular fa-comment-dots"></i> Forum</a>
+      <button class="btn-top-upload"><i class="fa-solid fa-upload"></i> Upload</button>
+      <button class="icon-btn"><i class="fa-regular fa-moon"></i></button>
+      <div class="notification-icon">
+        <i class="fa-regular fa-bell"></i>
+        <span class="badge">3</span>
+      </div>
+      <div class="avatar-circle top-avatar">AR</div>
+    </div>
+  </header>
+
+  <div class="app-container">
+    
+    <aside class="sidebar">
+      <nav class="sidebar-menu">
+        <a href="User_dashboard.html" class="menu-item"><i class="fa-solid fa-border-all"></i> Dashboard</a>
+        <a href="research-exploer1.html" class="menu-item"><i class="fa-solid fa-book-open"></i> Research Explorer</a>
+        <a href="Project.html" class="menu-item"><i class="fa-solid fa-folder"></i> Projects</a>
+        <a href="Community_Forum.html" class="menu-item"><i class="fa-regular fa-comments"></i> Community Forum</a>
+        <a href="#" class="menu-item"><i class="fa-solid fa-upload"></i> Upload Paper</a>
+        <a href="profile.html" class="menu-item active"><i class="fa-regular fa-user"></i> My Profile</a>
+        <a href="notification.html" class="menu-item"><i class="fa-regular fa-bell"></i> Notifications</a>
+        <a href="setting.html" class="menu-item"><i class="fa-solid fa-gear"></i> Settings</a>
+      </nav>
+
+      <div class="sidebar-footer">
+        <div class="user-info">
+          <div class="avatar-circle side-avatar">AR</div>
+          <div class="user-details">
+            <span class="user-name">Ahmed Rafi</span>
+            <span class="user-email">ahmed@uiu.ac.bd</span>
+          </div>
+        </div>
+        <a href="#" class="sign-out"><i class="fa-solid fa-right-from-bracket"></i> Sign Out</a>
+      </div>
+    </aside>
+
+    <main class="main-content">
+      <div class="content-wrapper">
+        <header class="page-header">
+          <h1>Settings</h1>
+          <p>Manage your account preferences and privacy</p>
+        </header>
+
+        <div class="settings-tabs">
+          <button class="tab-pill active">Profile</button>
+          <button class="tab-pill">Notifications</button>
+          <button class="tab-pill">Privacy</button>
+          <button class="tab-pill">Security</button>
+        </div>
+
+        <div class="profile-card">
+          <div class="profile-card-left">
+            <div class="avatar-circle settings-avatar">AR</div>
+            <div class="profile-card-info">
+              <h3>Ahmed Rahman</h3>
+              <p>ahmed.rahman@uiu.ac.bd</p>
+            </div>
+          </div>
+          <button class="btn-change-photo">
+            <i class="fa-solid fa-arrow-up-from-bracket"></i> Change Photo
+          </button>
+        </div>
+
+        <form class="settings-form">
+          <div class="form-group">
+            <label for="fullName">Full Name</label>
+            <input type="text" id="fullName" value="Dr. Ahmed Rahman" />
+          </div>
+
+          <div class="form-group">
+            <label for="displayName">Display Name</label>
+            <input type="text" id="displayName" value="Ahmed Rahman" />
+          </div>
+
+          <div class="form-group">
+            <label for="email">University Email</label>
+            <input type="email" id="email" value="ahmed.rahman@uiu.ac.bd" />
+          </div>
+
+          <div class="form-group">
+            <label for="department">Department</label>
+            <input type="text" id="department" />
+          </div>
+
+          <div class="form-group">
+            <label for="bio">Bio</label>
+            <textarea id="bio
