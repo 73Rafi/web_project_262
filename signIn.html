@@ -19,7 +19,8 @@
     </style>
 </head>
 <body>
-    <nav style="display: flex; justify-content: space-between; align-items: center; padding: 16px; background-color: white;">
+    <nav style="display: flex; justify-content: space-between; align-items: center; padding: 16px; background-color: white;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); border-radius: 8px;">
             <div style="display: flex; align-items: center; gap: 8px;">
                 <div style="width: 32px; height: 32px; border-radius: 50%; background-color: #e69275; display: flex; justify-content: center; align-items: center; color: white; font-weight: bold;">
                     UIU
@@ -29,8 +30,8 @@
                 </div>
             </div>
             <div style="display: flex; align-items: center; gap: 16px;">
-                    <div style="width: 87px; height: 28px; border-radius: 16px; background-color: #e69275; color: white; display: flex; justify-content: center; align-items: center;">
-                    <a href="User_dashboard.html" style="color: white; text-decoration: none;">Sign In</a>
+                    <div style="width: 87px; height: 28px; border-radius: 16px; background-color: #c06c50; color: white; display: flex; justify-content: center; align-items: center;">
+                    <a href="signIn.html" style="color: white; text-decoration: none;">Sign In</a>
                         </div>
                     <a href="register.html" class="nav_a_color" style="text-decoration: none;color: black;">Register</a>
                 </div>
@@ -39,10 +40,10 @@
                 
                 <div class="Panel" style="display: flex; width: 100%; height: 100vh;">
                     
-                    <div class="left-panel" style="background-color: #e69275; width: 50%; height: 100vh; display: flex; gap:15px 20px;padding: 0 8%; box-sizing: border-box; justify-content: center; align-items: flex-start;flex-direction: column;">
+                    <div class="left-panel" style="background-color: #EA5F34; width: 50%; height: 100vh; display: flex; gap:15px 20px;padding: 0 8%; box-sizing: border-box; justify-content: center; align-items: flex-start;flex-direction: column;">
                         <h1 style="color: white; font-weight: bold;"> Advanced Research,<br>Together.</h1>
-                        <p style="color: dimgray; font-size: 16px; text-align: center;">Join UIU's research
-                            community to discover papers, Collaborate on <br>projects and make an impact.
+                        <p style="color: rgb(243, 238, 238); font-size: 16px;">Join UIU's research
+                            community to discover papers, Collaborate on <br style="gap: 5px;">projects and make an impact.
                         </p>
                         <ul>
                             <li style="color: white; font-size: 18px; text-align: center;">Access thousand of Research Papers</li>
@@ -52,16 +53,18 @@
                     </div>
 
                     <div class="right-panel"style="width: 50%; height: 100vh; display: flex; justify-content: center; align-items: center;flex-direction: column;">
-                        <h1 style="color: #e69275; font-weight: bold;">Welcome Back!</h1>
+                        <h1 style="color: #c05332; font-weight: bold;">Welcome Back!</h1>
                         <p style="text-align: left;"> Sign in to your UIU Research account</p>
 
-                        <form action="User_dashboard.html" method="post" style="display: flex; flex-direction: column; gap: 16px; width: 300px;">
+                        <form action="User_dashboard.html"  style="display: flex; flex-direction: column; gap: 16px; width: 300px;">
+
+                            <!-- from e method add korbo backend korar somoi method="post" -->
                             <label style="font-size: 14px; font-weight: bold;">University Email</label>
                             <input type="email" name="email" placeholder="you@uiu.ac.bd" required style="padding: 8px; border-radius: 4px; border: 1px solid #ccc;">
                             <label style="font-size: 14px; font-weight: bold;">Password</label>
                             <input type="password" name="Enter your password" placeholder="Password" required style="padding: 8px; border-radius: 4px; border: 1px solid #ccc;">
                             <a href="forgot_password.html" style="text-decoration: none; color: #e69275; font-size: 14px; align-self: flex-end;">Forgot Password?</a>
-                            <button type="submit" style="padding: 8px; border-radius: 4px; background-color: #e69275; color: white; border: none;">Sign In</button>
+                            <button type="submit" style="padding: 8px; border-radius: 4px; background-color: #c76949; color: white; border: none;">Sign In</button>
                         </form>
                         <p style="font-size: 14px;">No account? <a href="register.html" style="text-decoration: none; color: #e69275; font-size: 16px;">Register here</a></p>
                     </div>
