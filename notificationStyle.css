@@ -1,0 +1,394 @@
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  font-family: "Segoe UI", Tahoma, sans-serif;
+}
+
+body {
+  background-color: #eef3ff;
+  color: #1d3557;
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+/* --- Top Navigation Bar --- */
+.navbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: #ffffff;
+  min-height: 62px;
+  padding: 10px 26px;
+  border-top: 3px solid #27364b;
+  border-bottom: 1px solid #edf0f5;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+
+.logo {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  white-space: nowrap;
+  font-weight: 700;
+  font-size: 14px;
+  color: #19345a;
+}
+
+.logo-mark {
+  width: 30px;
+  height: 30px;
+  background-color: #ed9276;
+  color: #ffffff;
+  border-radius: 50%;
+  font-size: 11px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.nav-right {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.nav-item {
+  text-decoration: none;
+  color: #52647e;
+  font-size: 12px;
+  font-weight: 400;
+  display: flex;
+  align-items: center;
+  padding: 5px 0;
+}
+
+.nav-item:hover {
+  color: #2563eb;
+}
+
+.btn-top-upload {
+  background-color: #ed9276;
+  color: #ffffff;
+  border: none;
+  padding: 8px 20px;
+  border-radius: 16px;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.icon-btn {
+  background: none;
+  border: none;
+  color: #64748b;
+  font-size: 16px;
+  cursor: pointer;
+}
+
+.notification-icon {
+  position: relative;
+  color: #405673;
+  font-size: 13px;
+  cursor: pointer;
+}
+
+.notification-icon.active-notification {
+  color: #1e5bd7;
+}
+
+.notification-icon .badge {
+  position: absolute;
+  top: -6px;
+  right: -8px;
+  background-color: #2362d8;
+  color: white;
+  font-size: 10px;
+  font-weight: bold;
+  border-radius: 50%;
+  padding: 2px 5px;
+}
+
+.avatar-circle {
+  background-color: #2563eb;
+  color: #ffffff;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 600;
+}
+
+.top-avatar {
+  width: 30px;
+  height: 30px;
+  background-color: #ed9276;
+  font-size: 12px;
+}
+
+/* --- Layout Structure --- */
+.app-container {
+  display: flex;
+  flex: 1;
+}
+
+/* --- Sidebar --- */
+.sidebar {
+  width: 175px;
+  background-color: #ffffff;
+  border-right: 1px solid #e2e8f0;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 16px 0;
+}
+
+.sidebar-menu {
+  display: flex;
+  flex-direction: column;
+}
+
+.menu-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 18px;
+  text-decoration: none;
+  color: #536985;
+  font-size: 11px;
+  font-weight: 400;
+  transition: all 0.2s ease;
+}
+
+.menu-item:hover {
+  background-color: #f8fafc;
+  color: #1e293b;
+}
+
+.menu-item.active {
+  background-color: #dce8ff;
+  color: #1e5bd7;
+  border-radius: 0 8px 8px 0;
+  margin-right: 7px;
+  font-weight: 600;
+}
+
+/* Sidebar Footer */
+.sidebar-footer {
+  padding: 14px 18px 0;
+  border-top: 1px solid #f1f5f9;
+}
+
+.user-info {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 10px;
+}
+
+.side-avatar {
+  width: 24px;
+  height: 24px;
+  font-size: 9px;
+  background-color: #2866df;
+}
+
+.user-details {
+  display: flex;
+  flex-direction: column;
+}
+
+.user-name {
+  font-size: 10px;
+  font-weight: 600;
+  color: #1e293b;
+}
+
+.user-email {
+  font-size: 8px;
+  color: #94a3b8;
+}
+
+.sign-out {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  text-decoration: none;
+  color: #64748b;
+  font-size: 11px;
+  font-weight: 500;
+}
+
+/* --- Main Content --- */
+.main-content {
+  flex: 1;
+  padding: 30px 34px;
+  display: flex;
+  justify-content: center;
+}
+
+.content-wrapper {
+  max-width: 790px;
+  width: 100%;
+}
+
+.page-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 24px;
+}
+
+.header-title h1 {
+  font-size: 28px;
+  color: #102b52;
+  font-weight: 700;
+  margin-bottom: 4px;
+}
+
+.header-title p {
+  color: #64748b;
+  font-size: 14px;
+}
+
+.mark-all-btn {
+  background: none;
+  border: none;
+  color: #334155;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.mark-all-btn:hover {
+  color: #2563eb;
+}
+
+/* --- Notifications List --- */
+.notifications-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.notification-card {
+  background-color: #ffffff;
+  border: 1px solid #dce5f4;
+  border-radius: 8px;
+  padding: 14px 18px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  box-shadow: 0 1px 2px rgba(27, 55, 94, 0.03);
+}
+
+.icon-circle {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+  flex-shrink: 0;
+}
+
+.icon-blue {
+  background-color: #eff6ff;
+  color: #3b82f6;
+}
+
+.icon-green-light {
+  background-color: #f0fdf4;
+  color: #22c55e;
+}
+
+.icon-green {
+  background-color: #f0fdf4;
+  color: #16a34a;
+}
+
+.icon-purple {
+  background-color: #faf5ff;
+  color: #a855f7;
+}
+
+.icon-pink {
+  background-color: #fdf2f8;
+  color: #ec4899;
+}
+
+.notification-body {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.notification-text {
+  font-size: 14px;
+  color: #475569;
+  font-weight: 500;
+}
+
+.notification-time {
+  font-size: 12px;
+  color: #94a3b8;
+}
+
+@media (max-width: 900px) {
+  .navbar {
+    padding-left: 14px;
+    padding-right: 14px;
+  }
+
+  .nav-item {
+    display: none;
+  }
+
+  .nav-right {
+    gap: 10px;
+  }
+
+  .main-content {
+    padding: 28px 18px;
+  }
+}
+
+@media (max-width: 560px) {
+  .sidebar {
+    width: 132px;
+  }
+
+  .menu-item {
+    padding-left: 12px;
+    padding-right: 8px;
+    font-size: 9px;
+  }
+
+  .main-content {
+    padding: 24px 12px;
+  }
+
+  .page-header {
+    align-items: flex-start;
+    gap: 12px;
+  }
+
+  .header-title h1 {
+    font-size: 24px;
+  }
+
+  .mark-all-btn {
+    font-size: 11px;
+    white-space: nowrap;
+  }
+}
