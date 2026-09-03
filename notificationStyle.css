@@ -59,7 +59,7 @@ body {
 .nav-item {
   text-decoration: none;
   color: #52647e;
-  font-size: 12px;
+  font-size: 14px;
   font-weight: 400;
   display: flex;
   align-items: center;
@@ -77,7 +77,7 @@ body {
   text-decoration: none;
   padding: 8px 20px;
   border-radius: 16px;
-  font-size: 12px;
+  font-size: 13px;
   font-weight: 600;
   cursor: pointer;
   display: flex;
@@ -141,13 +141,13 @@ body {
 
 /* --- Sidebar --- */
 .sidebar {
-  width: 175px;
+  width: 190px;
   background-color: #ffffff;
   border-right: 1px solid #e2e8f0;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  padding: 16px 0;
+  padding: 10px 0;
 }
 
 .sidebar-menu {
@@ -159,10 +159,10 @@ body {
   display: flex;
   align-items: center;
   gap: 10px;
-  padding: 10px 18px;
+  padding: 8px 18px;
   text-decoration: none;
   color: #536985;
-  font-size: 11px;
+  font-size: 14px;
   font-weight: 400;
   transition: all 0.2s ease;
 }
@@ -182,7 +182,7 @@ body {
 
 /* Sidebar Footer */
 .sidebar-footer {
-  padding: 14px 18px 0;
+  padding: 10px 18px 0;
   border-top: 1px solid #f1f5f9;
 }
 
@@ -190,7 +190,7 @@ body {
   display: flex;
   align-items: center;
   gap: 8px;
-  margin-bottom: 10px;
+  margin-bottom: 8px;
 }
 
 .side-avatar {
@@ -366,13 +366,13 @@ body {
 
 @media (max-width: 560px) {
   .sidebar {
-    width: 132px;
+    width: 190px;
   }
 
   .menu-item {
     padding-left: 12px;
     padding-right: 8px;
-    font-size: 9px;
+    font-size: 13px;
   }
 
   .main-content {

@@ -198,7 +198,6 @@ body {
     flex-direction: column;
     gap: 8px;
 }
-
 .sidebar-menu a {
     text-decoration: none;
     color: var(--text-normal);

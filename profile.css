@@ -34,7 +34,7 @@ body {
   gap: 8px;
   white-space: nowrap;
   font-weight: 700;
-  font-size: 14px;
+  font-size: 16px;
   color: #19345a;
 }
 
@@ -59,7 +59,7 @@ body {
 .nav-item {
   text-decoration: none;
   color: #52647e;
-  font-size: 12px;
+  font-size: 14px;
   font-weight: 400;
   display: flex;
   align-items: center;
@@ -76,7 +76,7 @@ body {
   border: none;
   padding: 8px 20px;
   border-radius: 16px;
-  font-size: 12px;
+  font-size: 13px;
   font-weight: 600;
   cursor: pointer;
   display: flex;
@@ -136,7 +136,7 @@ body {
 
 /* --- Sidebar --- */
 .sidebar {
-  width: 175px;
+  width: 190px;
   background-color: #ffffff;
   border-right: 1px solid #e2e8f0;
   display: flex;
@@ -157,7 +157,7 @@ body {
   padding: 10px 18px;
   text-decoration: none;
   color: #64748b;
-  font-size: 11px;
+  font-size: 14px;
   font-weight: 400;
   transition: all 0.2s ease;
 }
@@ -200,13 +200,13 @@ body {
 }
 
 .user-name {
-  font-size: 10px;
+  font-size: 12px;
   font-weight: 600;
   color: #1e293b;
 }
 
 .user-email {
-  font-size: 8px;
+  font-size: 10px;
   color: #94a3b8;
 }
 
