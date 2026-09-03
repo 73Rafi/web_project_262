@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>UIU Research Portal - Upload Paper</title>
+  <link rel="stylesheet" href="upload.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+</head>
+<body>
+
+  <header class="navbar">
+    <div class="nav-left">
+      <div class="logo">
+        <i class="fa-solid fa-graduation-cap"></i>
+        <span>UIU Research Portal</span>
+      </div>
+    </div>
+    
+    <div class="nav-right">
+      <a href="#" class="nav-item">Dashboard</a>
+      <a href="#" class="nav-item">Research</a>
+      <a href="#" class="nav-item">Projects</a>
+      <a href="#" class="nav-item">Forum</a>
+      <button class="btn-top-upload"><i class="fa-solid fa-upload"></i> Upload</button>
+      <button class="icon-btn"><i class="fa-regular fa-moon"></i></button>
+      <div class="notification-icon">
+        <i class="fa-regular fa-bell"></i>
+        <span class="badge">3</span>
+      </div>
+      <div class="avatar-circle top-avatar">AR</div>
+    </div>
+  </header>
+
+  <div class="app-container">
+    
+    <aside class="sidebar">
+      <nav class="sidebar-menu">
+        <a href="#" class="menu-item">Dashboard</a>
+        <a href="#" class="menu-item">Research Explorer</a>
+        <a href="#" class="menu-item">Projects</a>
+        <a href="#" class="menu-item">Community Forum</a>
+        <a href="#" class="menu-item active"><i class="fa-solid fa-upload"></i> Upload Paper</a>
+        <a href="#" class="menu-item"><i class="fa-regular fa-user"></i> My Profile</a>
+        <a href="#" class="menu-item"><i class="fa-regular fa-envelope"></i> Messages</a>
+        <a href="#" class="menu-item"><i class="fa-regular fa-bell"></i> Notifications</a>
+        <a href="#" class="menu-item"><i class="fa-solid fa-gear"></i> Settings</a>
+      </nav>
+
+      <div class="sidebar-footer">
+        <div class="user-info">
+          <div class="avatar-circle side-avatar">AR</div>
+          <div class="user-details">
+            <span class="user-name">Ahmed Rafi</span>
+            <span class="user-email">ahmed@uiu.ac.bd</span>
+          </div>
+        </div>
+        <a href="#" class="sign-out"><i class="fa-solid fa-right-from-bracket"></i> Sign Out</a>
+      </div>
+    </aside>
+
+    <main class="main-content">
+      <div class="content-wrapper">
+        <header class="page-header">
+          <h1>Upload Research Paper</h1>
+          <p>Share your research with the UIU academic community</p>
+        </header>
+
+        <div class="upload-dropzone">
+          <div class="upload-icon-box">
+            <i class="fa-solid fa-upload"></i>
+          </div>
+          <div class="dropzone-text">
+            <strong>Drag & drop PDF here</strong>
+            <p>or click to browse — max 50 MB</p>
+          </div>
+        </div>
+
+        <form class="upload-form">
+          <div class="form-group">
+            <label for="title">Paper Title</label>
+            <input type="text" id="title" placeholder="Enter the full title of your research paper" />
+          </div>
+
+          <div class="form-group">
+            <label for="authors">Authors</label>
+            <input type="text" id="authors" placeholder="Author names, comma-separated" />
+          </div>
+
+          <div class="form-group">
+            <label for="abstract">Abstract</label>
+            <textarea id="abstract" rows="4" placeholder="Provide a comprehensive abstract (150–300 words)..."></textarea>
+          </div>
+
+          <div class="form-group">
+            <label for="keywords">Keywords (comma-separated)</label>
+            <input type="text" id="keywords" placeholder="e.g. Machine Learning, IoT, Sustainability" />
+          </div>
+
+          <div class="form-row">
+            <div class="form-group half-width">
+              <label for="department">Department</label>
+              <input type="text" id="department" />
+            </div>
+            <div class="form-group half-width">
+              <label for="category">Category</label>
+              <input type="text" id="category" />
+            </div>
+          </div>
+
+          <div class="form-actions">
+            <button type="submit" class="btn-publish"><i class="fa-solid fa-upload"></i> Publish Paper</button>
+            <button type="button" class="btn-draft">Save Draft</button>
+          </div>
+        </form>
+      </div>
+    </main>
+
+  </div>
+
+</body>
+</html>
