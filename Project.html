@@ -537,6 +537,46 @@
             .page-heading h1 { font-size: 27px; }
             .project-grid { grid-template-columns: 1fr; }
         }
+
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            z-index: 10;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            background: rgba(24, 35, 61, .45);
+        }
+
+        .modal-overlay.open { display: flex; }
+
+        .project-modal {
+            width: min(100%, 520px);
+            padding: 26px;
+            border-radius: 14px;
+            background: #fff;
+            box-shadow: 0 12px 35px rgba(24, 35, 61, .2);
+        }
+
+        .modal-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 18px;
+        }
+
+        .modal-header h2 { margin: 0; font-size: 22px; }
+        .modal-close { border: 0; background: transparent; color: #64748b; font-size: 22px; cursor: pointer; }
+        .project-form label { display: block; margin: 12px 0 6px; font-weight: 600; }
+        .project-form input, .project-form textarea, .project-form select {
+            width: 100%; padding: 10px; border: 1px solid #d6deeb; border-radius: 7px; font: inherit;
+        }
+        .project-form textarea { min-height: 90px; resize: vertical; }
+        .form-actions { display: flex; justify-content: flex-end; gap: 10px; margin-top: 20px; }
+        .form-actions button { padding: 10px 16px; border: 0; border-radius: 7px; cursor: pointer; font: inherit; }
+        .form-cancel { background: #eef2f7; color: #334155; }
+        .form-submit { background: #155eef; color: #fff; }
     </style>
 </head>
 <body class="open-sans">
@@ -625,7 +665,7 @@
                     <h1>Research Projects</h1>
                     <p>Browse ongoing projects and find collaboration opportunities</p>
                 </div>
-                <a class="create-button" href="#">
+                <a class="create-button" href="#create-project-modal" onclick="openProjectModal(event)">
                     <i class="fa-solid fa-plus"></i>
                     Create Project
                 </a>
@@ -781,5 +821,46 @@
             </div>
         </main>
     </div>
+
+    <div class="modal-overlay" id="create-project-modal" role="dialog" aria-modal="true" aria-labelledby="create-project-title" onclick="closeProjectModal(event)">
+        <div class="project-modal" onclick="event.stopPropagation()">
+            <div class="modal-header">
+                <h2 id="create-project-title">Create Project</h2>
+                <button class="modal-close" type="button" aria-label="Close" onclick="closeProjectModal()">&times;</button>
+            </div>
+            <form class="project-form" onsubmit="submitProject(event)">
+                <label for="project-name">Project name</label>
+                <input id="project-name" type="text" required placeholder="Enter project name">
+                <label for="project-description">Description</label>
+                <textarea id="project-description" required placeholder="Describe your project"></textarea>
+                <label for="project-status">Status</label>
+                <select id="project-status">
+                    <option>Active</option>
+                    <option>Recruiting</option>
+                    <option>Completed</option>
+                </select>
+                <div class="form-actions">
+                    <button class="form-cancel" type="button" onclick="closeProjectModal()">Cancel</button>
+                    <button class="form-submit" type="submit">Create Project</button>
+                </div>
+            </form>
+        </div>
+    </div>
+    <script>
+        function openProjectModal(event) {
+            event.preventDefault();
+            document.getElementById('create-project-modal').classList.add('open');
+            document.getElementById('project-name').focus();
+        }
+        function closeProjectModal() {
+            document.getElementById('create-project-modal').classList.remove('open');
+        }
+        function submitProject(event) {
+            event.preventDefault();
+            alert('Project created successfully!');
+            closeProjectModal();
+            event.target.reset();
+        }
+    </script>
 </body>
 </html>
