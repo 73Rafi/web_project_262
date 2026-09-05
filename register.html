@@ -1,17 +1,112 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Register</title>
+
+    <style>
+        ul {
+            list-style-type: none;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 10px;
+            margin-top: 20px;
+        }
+    </style>
 </head>
+
 <body>
-    <h1> Ki ene Ki dekho?</h1>
+    <nav style="display: flex; justify-content: space-between; align-items: center; padding: 16px; background-color: white;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); border-radius: 8px;">
+        <div style="display: flex; align-items: center; gap: 8px;">
+            <div
+                style="width: 32px; height: 32px; border-radius: 50%; background-color: #e69275; display: flex; justify-content: center; align-items: center; color: white; font-weight: bold;">
+                UIU
+            </div>
+            <div style="font-size: 14px; font-weight: bold; cursor: pointer;"
+                onclick="window.location.href='Home_page.html'">
+                UIU Research Portal
+            </div>
+        </div>
+        <div style="display: flex; align-items: center; gap: 16px;">
+            <a href="signIn.html" style="color: black; text-decoration: none;">Sign In</a>
 
 
-    <h3>Ki hoilo ekhono jao nai!</h3>
+            <div
+                style="width: 87px; height: 28px; border-radius: 16px; background-color: #c06c50; color: white; display: flex; justify-content: center; align-items: center;">
+                <a href="register.html" class="nav_a_color" style="text-decoration: none;color: white;"
+                    style="color: white; text-decoration: none;">Register</a>
 
-    <h5>kaj kam nai buji?</h5>
-    <h6>hasdhahd</h6>
+            </div>
+        </div>
+
+    </nav>
+
+    <div class="Panel" style="display: flex; width: 100%; height: 100vh;">
+
+        <div class="left-panel"
+            style="background-color: #EA5F34; width: 50%; height: 100vh; display: flex; gap:15px 20px;padding: 0 8%; box-sizing: border-box; justify-content: center; align-items: flex-start;flex-direction: column;">
+            <h1 style="color: white; font-weight: bold;"> Advanced Research,<br>Together.</h1>
+            <p style="color: rgb(243, 238, 238); font-size: 16px;">Join UIU's research
+                community to discover papers, Collaborate on <br style="gap: 5px;">projects and make an impact.
+            </p>
+            <ul>
+                <li style="color: white; font-size: 18px; text-align: center;">Access thousand of Research Papers</li>
+                <li style="color: white; font-size: 18px; text-align: center;">Collaborate with UIU Researchers</li>
+                <li style="color: white; font-size: 18px; text-align: center;">Publish and share your work</li>
+            </ul>
+        </div>
+
+        <div class="right-panel"
+            style="width: 50%; height: 100vh; display: flex; justify-content: center; align-items: center;flex-direction: column;">
+            <div style="color: #c05332; font-weight: bold; font-size: 36px;">Create account</h1>
+                <p style="text-align: left; font-size: 16px;"> Join the UIU research Community</p>
+
+                <form action="User_dashboard.html"
+                    style="display: flex; flex-direction: column; gap: 16px; width: 300px;">
+
+                    <!-- from e method add korbo backend korar somoi method="post" -->
+                    <label style="font-size: 18px;">Full Name</label>
+                    <input type="text" name="name" placeholder="Dr. Ahmed Rahman" required
+                        style="padding: 8px; border-radius: 4px; border: 1px solid #ccc;">
+                    <label style="font-size: 18px;">Role</label>
+                    <select name="role" style="padding: 8px; border-radius: 4px; border: 1px solid #ccc;">
+                        <option value="student">Student</option>
+                        <option value="teacher">Teacher</option>
+                        <option value="admin">Admin</option>
+                    </select>
+                    <label style="font-size: 18px;">Department</label>
+                    <input type="text" name="name" placeholder="Computer Science /Data Science ..." required
+                        style="padding: 8px; border-radius: 4px; border: 1px solid #ccc;">
+                    <label style="font-size: 18px;">Upload CV/Resume</label>
+                    <input type="file" name="cv" required
+                        style="padding: 8px; border-radius: 4px; border: 1px solid #ccc;">
+
+                    <label style="font-size: 14px; font-weight: bold;">University Email</label>
+                    <input type="email" name="email" placeholder="you@uiu.ac.bd" required
+                        style="padding: 8px; border-radius: 4px; border: 1px solid #ccc;">
+                    <label style="font-size: 14px; font-weight: bold;">Password</label>
+                    <input type="password" name="Enter your password" placeholder="Password" required
+                        style="padding: 8px; border-radius: 4px; border: 1px solid #ccc;">
+                    <a href="forgot_password.html"
+                        style="text-decoration: none; color: #e69275; font-size: 14px; align-self: flex-end;">Forgot
+                        Password?</a>
+                    <button type="submit"
+                        style="padding: 8px; border-radius: 4px; background-color: #c76949; color: white; border: none;">Create
+                        Account</button>
+                </form>
+                <p style="font-size: 14px;">Already registered? <a href="signIn.html"
+                        style="text-decoration: none; color: #e69275; font-size: 16px;">Sign In</a></p>
+            </div>
+        </div>
+</div>
+
+
 </body>
+
 </html>

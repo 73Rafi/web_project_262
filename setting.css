@@ -16,6 +16,7 @@ body {
 /* --- Top Navigation Bar --- */
 .navbar {
   display: flex;
+  text-decoration: none;
   justify-content: space-between;
   align-items: center;
   background-color: #ffffff;
@@ -127,7 +128,7 @@ body {
 
 /* --- Sidebar --- */
 .sidebar {
-  width: 240px;
+  width: 190px;
   background-color: #ffffff;
   border-right: 1px solid #e2e8f0;
   display: flex;
