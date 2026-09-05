@@ -109,6 +109,141 @@
             text-decoration: none;
             color: inherit;
         }
+
+        .discussion-scrim {
+            position: fixed;
+            inset: 0;
+            z-index: 10;
+            background: rgba(16, 20, 29, 0.42);
+        }
+
+        .discussion-modal {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            z-index: 11;
+            width: min(100% - 30px, 500px);
+            transform: translate(-50%, -50%);
+            padding: 22px 18px 18px;
+            border-radius: 10px;
+            background: #ffffff;
+            box-shadow: 0 18px 50px rgba(15, 23, 42, 0.24);
+        }
+
+        .discussion-modal-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 0 12px;
+            border-bottom: 1px solid #edf0f6;
+        }
+
+        .discussion-modal-header h2 {
+            margin: 0;
+            color: #14203c;
+            font-size: 14px;
+        }
+
+        .discussion-close {
+            border: 0;
+            background: transparent;
+            color: #68748a;
+            cursor: pointer;
+            font-size: 10px;
+        }
+
+        .discussion-form {
+            padding-top: 11px;
+        }
+
+        .discussion-field {
+            display: block;
+            margin-bottom: 14px;
+            color: #1e2b47;
+            font-size: 10px;
+            font-weight: 700;
+        }
+
+        .discussion-required {
+            color: #e11d48;
+        }
+
+        .discussion-field input,
+        .discussion-field select,
+        .discussion-field textarea {
+            display: block;
+            width: 100%;
+            margin-top: 5px;
+            border: 1px solid #dce5fb;
+            border-radius: 10px;
+            outline: none;
+            background: #eef3ff;
+            color: #24324e;
+            font: inherit;
+            font-size: 11px;
+        }
+
+        .discussion-field input,
+        .discussion-field select {
+            height: 32px;
+            padding: 0 12px;
+        }
+
+        .discussion-field textarea {
+            min-height: 90px;
+            padding: 10px 12px;
+            resize: vertical;
+        }
+
+        .discussion-field input::placeholder,
+        .discussion-field textarea::placeholder {
+            color: #7e8aa4;
+        }
+
+        .discussion-field input:focus,
+        .discussion-field select:focus,
+        .discussion-field textarea:focus {
+            border-color: #8ba9f7;
+            box-shadow: 0 0 0 2px rgba(40, 91, 224, 0.1);
+        }
+
+        .discussion-actions {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-top: 5px;
+        }
+
+        .discussion-actions button {
+            height: 32px;
+            border: 1px solid #dce4f3;
+            border-radius: 16px;
+            background: #ffffff;
+            color: #1e2b47;
+            font: inherit;
+            font-size: 10px;
+            font-weight: 700;
+            cursor: pointer;
+        }
+
+        .discussion-actions .discussion-submit {
+            flex: 1;
+            border-color: #8caaf4;
+            background: #8caaf4;
+            color: #ffffff;
+        }
+
+        .discussion-actions .discussion-submit:hover {
+            background: #174bc1;
+        }
+
+        .discussion-success {
+            display: none;
+            margin: 6px 0 0;
+            color: #00885e;
+            font-size: 9px;
+            text-align: center;
+        }
     </style>
 
 </head>
@@ -207,7 +342,7 @@
                         <h1>Community Forum</h1>
                         <p>Discuss, ask questions, and connect with UIU researchers</p>
                     </div>
-                    <button class="btn-primary"><i class="fa-solid fa-pen-to-square"></i> New Discussion</button>
+                    <button class="btn-primary" id="openDiscussionModal" type="button"><i class="fa-solid fa-pen-to-square"></i> New Discussion</button>
                 </header>
 
                 <div class="forum-layout">
@@ -321,5 +456,64 @@
             </main>
         </div>
     </div>
+
+    <div class="discussion-scrim" id="discussionScrim" hidden></div>
+    <section class="discussion-modal" id="discussionModal" role="dialog" aria-modal="true" aria-labelledby="discussionModalTitle" hidden>
+        <div class="discussion-modal-header">
+            <h2 id="discussionModalTitle">Start a New Discussion</h2>
+            <button class="discussion-close" id="closeDiscussionModal" type="button" aria-label="Close dialog">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+        </div>
+        <form class="discussion-form" id="discussionForm">
+            <label class="discussion-field">Title <span class="discussion-required">*</span>
+                <input type="text" name="title" placeholder="Ask a question or share a topic..." required>
+            </label>
+            <label class="discussion-field">Category
+                <select name="category">
+                    <option value="" selected disabled>Select a category</option>
+                    <option>General Discussion</option>
+                    <option>Research Methods</option>
+                    <option>Career &amp; Funding</option>
+                    <option>Paper Reviews</option>
+                    <option>Tools &amp; Software</option>
+                </select>
+            </label>
+            <label class="discussion-field">Description
+                <textarea name="description" placeholder="Describe your question or topic in detail..."></textarea>
+            </label>
+            <div class="discussion-actions">
+                <button class="discussion-submit" type="submit"><i class="fa-solid fa-paper-plane"></i> Post Discussion</button>
+                <button id="cancelDiscussionModal" type="button">Cancel</button>
+            </div>
+            <p class="discussion-success" id="discussionSuccess">Discussion posted successfully.</p>
+        </form>
+    </section>
+
+    <script>
+        const discussionModal = document.getElementById('discussionModal');
+        const discussionScrim = document.getElementById('discussionScrim');
+        const discussionForm = document.getElementById('discussionForm');
+
+        function closeDiscussionModal() {
+            discussionModal.hidden = true;
+            discussionScrim.hidden = true;
+        }
+
+        document.getElementById('openDiscussionModal').addEventListener('click', () => {
+            discussionModal.hidden = false;
+            discussionScrim.hidden = false;
+        });
+        document.getElementById('closeDiscussionModal').addEventListener('click', closeDiscussionModal);
+        document.getElementById('cancelDiscussionModal').addEventListener('click', closeDiscussionModal);
+        discussionScrim.addEventListener('click', closeDiscussionModal);
+        document.addEventListener('keydown', event => {
+            if (event.key === 'Escape') closeDiscussionModal();
+        });
+        discussionForm.addEventListener('submit', event => {
+            event.preventDefault();
+            document.getElementById('discussionSuccess').style.display = 'block';
+        });
+    </script>
 </body>
 </html>
