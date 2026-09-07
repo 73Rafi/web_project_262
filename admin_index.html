@@ -1,0 +1,1271 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>UIU Research Portal - Admin Panel</title>
+  <link rel="stylesheet" href="admin_styles.css">
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+</head>
+<body x-data="{ 
+    activeTab: 'overview', 
+    activeModal: null,
+    userRoleFilter: 'All',
+    userDeptFilter: 'All',
+    paperTopicFilter: 'All',
+    paperYearFilter: 'Newest',
+    projectDeptFilter: 'All',
+    projectStatusFilter: 'All'
+}">
+
+  <header class="navbar">
+    <div class="nav-container">
+      <div class="brand">
+        <div class="brand-logo">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+            <path d="M22 10v6M2 10l10-5 10 5-10 5z"/>
+            <path d="M6 12v5c3 3 9 3 12 0v-5"/>
+          </svg>
+        </div>
+        <span class="brand-name">UIU Research Portal</span>
+      </div>
+      <div class="nav-actions">
+        <button class="icon-btn" title="Notifications">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
+            <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
+          </svg>
+        </button>
+        <div class="user-avatar" title="Admin Account">AD</div>
+      </div>
+    </div>
+  </header>
+
+  <main class="main-wrapper">
+    <a href="#" class="back-link">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+        <path d="M19 12H5M12 19l-7-7 7-7"/>
+      </svg>
+      Back to Public Portal
+    </a>
+
+    <div class="admin-header">
+      <div class="admin-title-row">
+        <div class="admin-icon">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="3"></circle>
+            <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+          </svg>
+        </div>
+        <div>
+          <h1>Admin Control Center</h1>
+          <p class="subtitle">Manage user verification, research publications, and project workflows</p>
+        </div>
+      </div>
+
+      <div class="tabs-nav">
+        <button class="tab-btn" :class="{ 'active': activeTab === 'overview' }" @click="activeTab = 'overview'">Overview</button>
+        <button class="tab-btn" :class="{ 'active': activeTab === 'users' }" @click="activeTab = 'users'">Users <span class="badge">2</span></button>
+        <button class="tab-btn" :class="{ 'active': activeTab === 'papers' }" @click="activeTab = 'papers'">Papers <span class="badge">2</span></button>
+        <button class="tab-btn" :class="{ 'active': activeTab === 'projects' }" @click="activeTab = 'projects'">Projects <span class="badge">2</span></button>
+      </div>
+    </div>
+
+    <!-- OVERVIEW TAB -->
+    <section x-show="activeTab === 'overview'" class="tab-content">
+      <div class="stats-grid">
+        <div class="stat-card" @click="activeTab = 'users'" style="cursor: pointer;">
+          <div class="stat-icon yellow">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle></svg>
+          </div>
+          <div class="stat-value">2</div>
+          <div class="stat-label">Pending Users</div>
+        </div>
+        <div class="stat-card" @click="activeTab = 'papers'" style="cursor: pointer;">
+          <div class="stat-icon blue">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline></svg>
+          </div>
+          <div class="stat-value">2</div>
+          <div class="stat-label">Pending Papers</div>
+        </div>
+        <div class="stat-card" @click="activeTab = 'projects'" style="cursor: pointer;">
+          <div class="stat-icon purple">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path></svg>
+          </div>
+          <div class="stat-value">2</div>
+          <div class="stat-label">Pending Projects</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon green">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline></svg>
+          </div>
+          <div class="stat-value">5,218</div>
+          <div class="stat-label">Total Active Members</div>
+        </div>
+      </div>
+
+      <div class="chart-card">
+        <h3>Paper Submissions & Approvals (5-Month Trend)</h3>
+        <div class="chart-bars">
+          <div class="chart-col">
+            <div class="bars">
+              <div class="bar bar-sub" style="height: 50%;"></div>
+              <div class="bar bar-app" style="height: 40%;"></div>
+            </div>
+            <span>Sep</span>
+          </div>
+          <div class="chart-col">
+            <div class="bars">
+              <div class="bar bar-sub" style="height: 65%;"></div>
+              <div class="bar bar-app" style="height: 58%;"></div>
+            </div>
+            <span>Oct</span>
+          </div>
+          <div class="chart-col">
+            <div class="bars">
+              <div class="bar bar-sub" style="height: 85%;"></div>
+              <div class="bar bar-app" style="height: 72%;"></div>
+            </div>
+            <span>Nov</span>
+          </div>
+          <div class="chart-col">
+            <div class="bars">
+              <div class="bar bar-sub" style="height: 60%;"></div>
+              <div class="bar bar-app" style="height: 52%;"></div>
+            </div>
+            <span>Dec</span>
+          </div>
+          <div class="chart-col">
+            <div class="bars">
+              <div class="bar bar-sub" style="height: 90%;"></div>
+              <div class="bar bar-app" style="height: 80%;"></div>
+            </div>
+            <span>Jan</span>
+          </div>
+        </div>
+        <div class="chart-legend">
+          <span class="legend-item"><span class="dot light-blue"></span> Submitted</span>
+          <span class="legend-item"><span class="dot dark-blue"></span> Approved</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- USERS TAB -->
+    <section x-show="activeTab === 'users'" class="tab-content">
+      <div class="filter-bar">
+        <div class="search-box">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+          <input type="text" placeholder="Search by name, email or ID...">
+        </div>
+        <div class="dropdown-group">
+          <select class="custom-select" x-model="userRoleFilter">
+            <option value="All">All Roles</option>
+            <option value="Faculty">Faculty</option>
+            <option value="Researcher">Researcher</option>
+            <option value="Student">Student</option>
+          </select>
+          <select class="custom-select" x-model="userDeptFilter">
+            <option value="All">All Departments</option>
+            <option value="CSE">CSE</option>
+            <option value="EEE">EEE</option>
+            <option value="Biotechnology">Biotechnology</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="section-group">
+        <h2 class="section-title warning">AWAITING VERIFICATION (2)</h2>
+        <div class="card-list">
+          <div class="data-card">
+            <div class="user-meta">
+              <div class="avatar orange">HT</div>
+              <div>
+                <h4>Mr. Hassan T.</h4>
+                <p>hassan.t@uiu.ac.bd · Student · CSE</p>
+                <span class="meta-sub">Submitted: Jul 10, 2025 · ID: 011222307</span>
+              </div>
+            </div>
+            <div class="card-actions">
+              <span class="status-pill warning">Pending</span>
+              <button class="btn btn-outline" @click="activeModal = 'user-hassan'">👁 View Profile</button>
+              <button class="btn btn-primary">✓ Accept</button>
+              <button class="btn btn-danger-icon">✕</button>
+            </div>
+          </div>
+
+          <div class="data-card">
+            <div class="user-meta">
+              <div class="avatar purple">KN</div>
+              <div>
+                <h4>Dr. Khatun N.</h4>
+                <p>khatun.n@uiu.ac.bd · Faculty · Biotechnology</p>
+                <span class="meta-sub">Submitted: Jul 15, 2025 · ID: FAC-8821</span>
+              </div>
+            </div>
+            <div class="card-actions">
+              <span class="status-pill warning">Pending</span>
+              <button class="btn btn-outline" @click="activeModal = 'user-khatun'">👁 View Profile</button>
+              <button class="btn btn-primary">✓ Accept</button>
+              <button class="btn btn-danger-icon">✕</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="section-group">
+        <h2 class="section-title success">ACTIVE MEMBERS (3)</h2>
+        <div class="card-list">
+          <div class="data-card">
+            <div class="user-meta">
+              <div class="avatar blue">RM</div>
+              <div>
+                <h4>Dr. Rahman M.A.</h4>
+                <p>rahman@uiu.ac.bd · Faculty · CSE</p>
+                <span class="meta-sub">Verified: Jan 12, 2024 · 12 Research Publications</span>
+              </div>
+            </div>
+            <div class="card-actions">
+              <span class="status-pill success">Active</span>
+              <button class="btn btn-outline" @click="activeModal = 'user-rahman'">👁 Details</button>
+              <button class="btn btn-icon-only" title="Delete User">🗑</button>
+            </div>
+          </div>
+
+          <div class="data-card">
+            <div class="user-meta">
+              <div class="avatar pink">IF</div>
+              <div>
+                <h4>Ms. Islam F.</h4>
+                <p>islam.f@uiu.ac.bd · Researcher · CSE</p>
+                <span class="meta-sub">Verified: Mar 3, 2024 · 4 Research Publications</span>
+              </div>
+            </div>
+            <div class="card-actions">
+              <span class="status-pill success">Active</span>
+              <button class="btn btn-outline" @click="activeModal = 'user-islam'">👁 Details</button>
+              <button class="btn btn-icon-only" title="Delete User">🗑</button>
+            </div>
+          </div>
+
+          <div class="data-card">
+            <div class="user-meta">
+              <div class="avatar green">HS</div>
+              <div>
+                <h4>Prof. Hossain S.</h4>
+                <p>hossain@uiu.ac.bd · Faculty · EEE</p>
+                <span class="meta-sub">Verified: Feb 18, 2024 · 18 Research Publications</span>
+              </div>
+            </div>
+            <div class="card-actions">
+              <span class="status-pill success">Active</span>
+              <button class="btn btn-outline" @click="activeModal = 'user-hossain'">👁 Details</button>
+              <button class="btn btn-icon-only" title="Delete User">🗑</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- PAPERS TAB -->
+    <section x-show="activeTab === 'papers'" class="tab-content">
+      <div class="filter-bar">
+        <div class="search-box">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+          <input type="text" placeholder="Search papers by title, author, or keyword...">
+        </div>
+        <div class="dropdown-group">
+          <select class="custom-select" x-model="paperTopicFilter">
+            <option value="All">All Topics</option>
+            <option value="Artificial Intelligence">Artificial Intelligence</option>
+            <option value="Biotechnology">Biotechnology</option>
+            <option value="Blockchain">Blockchain</option>
+          </select>
+          <select class="custom-select" x-model="paperYearFilter">
+            <option value="Newest">Newest First</option>
+            <option value="2025">2025</option>
+            <option value="2024">2024</option>
+            <option value="2023">2023</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="section-group">
+        <h2 class="section-title warning">PENDING REVIEW (2)</h2>
+        <div class="card-list">
+          <div class="data-card">
+            <div class="item-meta">
+              <div class="icon-box blue">📄</div>
+              <div>
+                <h4>Deep Learning Approaches for Real-Time Traffic Flow Prediction in Smart Cities</h4>
+                <p>Dr. Rahman M.A. · Computer Science & Engineering · 2024</p>
+                <div class="tag-row">
+                  <span class="tag">Deep Learning</span>
+                  <span class="tag">Smart Cities</span>
+                  <span class="tag">LSTM</span>
+                </div>
+              </div>
+            </div>
+            <div class="card-actions">
+              <button class="btn btn-outline" @click="activeModal = 'paper-traffic'">👁 Details</button>
+              <button class="btn btn-primary">✓ Approve</button>
+              <button class="btn btn-danger-icon">✕</button>
+            </div>
+          </div>
+
+          <div class="data-card">
+            <div class="item-meta">
+              <div class="icon-box blue">📄</div>
+              <div>
+                <h4>CRISPR-Cas9 Gene Editing for Enhanced Drought Resistance in Boro Rice Varieties</h4>
+                <p>Dr. Khatun N. · Biotechnology · 2024</p>
+                <div class="tag-row">
+                  <span class="tag">CRISPR</span>
+                  <span class="tag">Gene Editing</span>
+                  <span class="tag">Agriculture</span>
+                </div>
+              </div>
+            </div>
+            <div class="card-actions">
+              <button class="btn btn-outline" @click="activeModal = 'paper-crispr'">👁 Details</button>
+              <button class="btn btn-primary">✓ Approve</button>
+              <button class="btn btn-danger-icon">✕</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="section-group">
+        <h2 class="section-title success">PUBLISHED PAPERS (3)</h2>
+        <div class="card-list">
+          <div class="data-card">
+            <div class="item-meta">
+              <div class="icon-box blue">📄</div>
+              <div>
+                <h4>Blockchain-Enabled Secure Medical Record Sharing in Resource-Constrained Systems</h4>
+                <p>Prof. Chowdhury B.R. · Computer Science & Engineering · 2023</p>
+                <div class="tag-row">
+                  <span class="tag">Blockchain</span>
+                  <span class="tag">Healthcare</span>
+                  <span class="tag">Security</span>
+                </div>
+              </div>
+            </div>
+            <div class="card-actions">
+              <button class="btn btn-outline" @click="activeModal = 'paper-blockchain'">👁 Details</button>
+              <button class="btn btn-icon-only">🗑</button>
+            </div>
+          </div>
+
+          <div class="data-card">
+            <div class="item-meta">
+              <div class="icon-box blue">📄</div>
+              <div>
+                <h4>Solar-Powered IoT Sensor Networks for Real-Time Flood Monitoring in Coastal Bangladesh</h4>
+                <p>Dr. Uddin K.M. · Electrical & Electronic Engineering · 2024</p>
+                <div class="tag-row">
+                  <span class="tag">IoT</span>
+                  <span class="tag">Solar Energy</span>
+                  <span class="tag">Flood Alert</span>
+                </div>
+              </div>
+            </div>
+            <div class="card-actions">
+              <button class="btn btn-outline" @click="activeModal = 'paper-iot'">👁 Details</button>
+              <button class="btn btn-icon-only">🗑</button>
+            </div>
+          </div>
+
+          <div class="data-card">
+            <div class="item-meta">
+              <div class="icon-box blue">📄</div>
+              <div>
+                <h4>Natural Language Processing for Bangla Legal Document Summarization</h4>
+                <p>Dr. Molla S. · Computer Science & Engineering · 2024</p>
+                <div class="tag-row">
+                  <span class="tag">NLP</span>
+                  <span class="tag">Bangla</span>
+                  <span class="tag">Legal Tech</span>
+                </div>
+              </div>
+            </div>
+            <div class="card-actions">
+              <button class="btn btn-outline" @click="activeModal = 'paper-nlp'">👁 Details</button>
+              <button class="btn btn-icon-only">🗑</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- PROJECTS TAB -->
+    <section x-show="activeTab === 'projects'" class="tab-content">
+      <div class="filter-bar">
+        <div class="search-box">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+          <input type="text" placeholder="Search project proposals...">
+        </div>
+        <div class="dropdown-group">
+          <select class="custom-select" x-model="projectDeptFilter">
+            <option value="All">All Departments</option>
+            <option value="CSE">CSE</option>
+            <option value="EEE">EEE</option>
+            <option value="Biotechnology">Biotechnology</option>
+          </select>
+          <select class="custom-select" x-model="projectStatusFilter">
+            <option value="All">All Statuses</option>
+            <option value="Pending">Pending</option>
+            <option value="Recruiting">Recruiting</option>
+            <option value="Completed">Completed</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="section-group">
+        <h2 class="section-title warning">PENDING APPROVAL (2)</h2>
+        <div class="card-list">
+          <div class="data-card">
+            <div class="item-meta">
+              <div class="icon-box purple">📁</div>
+              <div>
+                <h4>AI-Powered Bangla Sign Language Recognition System</h4>
+                <p>Led by Dr. Rahman M.A. · CSE · Submitted Jul 14, 2025</p>
+              </div>
+            </div>
+            <div class="card-actions">
+              <button class="btn btn-outline" @click="activeModal = 'project-signlang'">👁 Details</button>
+              <button class="btn btn-primary">✓ Approve</button>
+              <button class="btn btn-danger-icon">✕</button>
+            </div>
+          </div>
+
+          <div class="data-card">
+            <div class="item-meta">
+              <div class="icon-box purple">📁</div>
+              <div>
+                <h4>Low-Cost Portable ECG Device for Rural Healthcare</h4>
+                <p>Led by Dr. Khatun N. · Biotechnology · Submitted Jul 16, 2025</p>
+              </div>
+            </div>
+            <div class="card-actions">
+              <button class="btn btn-outline" @click="activeModal = 'project-ecg'">👁 Details</button>
+              <button class="btn btn-primary">✓ Approve</button>
+              <button class="btn btn-danger-icon">✕</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="section-group">
+        <h2 class="section-title success">ACTIVE & PUBLISHED PROJECTS (2)</h2>
+        <div class="card-list">
+          <div class="data-card">
+            <div class="item-meta">
+              <div class="icon-box purple">📁</div>
+              <div>
+                <h4>Smart Aquaculture Monitoring with IoT and ML</h4>
+                <p>Led by Prof. Hossain S.K. · EEE · Approved Jun 2, 2025</p>
+                <div class="tag-row inline-pills">
+                  <span class="status-pill blue">Recruiting</span>
+                  <span class="capacity">👥 4/6 members</span>
+                  <span class="tag">IoT</span>
+                  <span class="tag">Machine Learning</span>
+                </div>
+              </div>
+            </div>
+            <div class="card-actions">
+              <button class="btn btn-outline" @click="activeModal = 'project-aquaculture'">👁 Details</button>
+              <button class="btn btn-icon-only">🗑</button>
+            </div>
+          </div>
+
+          <div class="data-card">
+            <div class="item-meta">
+              <div class="icon-box purple">📁</div>
+              <div>
+                <h4>Microplastic Detection in Buriganga River Using Spectroscopy</h4>
+                <p>Led by Prof. Kabir M.H. · Environmental Science · Approved Dec 1, 2024</p>
+                <div class="tag-row inline-pills">
+                  <span class="status-pill gray">Completed</span>
+                  <span class="capacity">👥 5/5 members</span>
+                  <span class="tag">Chemistry</span>
+                </div>
+              </div>
+            </div>
+            <div class="card-actions">
+              <button class="btn btn-outline" @click="activeModal = 'project-microplastic'">👁 Details</button>
+              <button class="btn btn-icon-only">🗑</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="section-group">
+        <h2 class="section-title danger">REJECTED PROJECTS (1)</h2>
+        <div class="card-list">
+          <div class="data-card muted">
+            <div class="item-meta">
+              <div class="icon-box red">📁</div>
+              <div>
+                <h4>Unverified Urban Drone Surveillance Network</h4>
+                <p>Led by Student A. Rahman · CSE · Reviewed May 10, 2025</p>
+                <div class="tag-row">
+                  <span class="status-pill danger">Rejected</span>
+                  <span class="tag">Drones</span>
+                  <span class="tag">Security</span>
+                </div>
+              </div>
+            </div>
+            <div class="card-actions">
+              <button class="btn btn-outline" @click="activeModal = 'project-drone'">👁 View Reason</button>
+              <button class="btn btn-icon-only">🗑</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- ================= MODALS SECTION ================= -->
+
+  <!-- 1. PENDING USER MODAL (HASSAN) -->
+  <div class="modal-backdrop" :class="{ 'active': activeModal === 'user-hassan' }" @click.self="activeModal = null">
+    <div class="modal-box">
+      <div class="modal-header">
+        <h3>User Profile Review</h3>
+        <button class="close-btn" @click="activeModal = null">✕</button>
+      </div>
+      <div class="modal-body">
+        <div class="user-hero-card">
+          <div class="avatar orange lg">HT</div>
+          <div>
+            <h3>Mr. Hassan T.</h3>
+            <p class="user-email">hassan.t@uiu.ac.bd</p>
+            <p class="user-sub">Student · CSE · Joined Jul 10, 2025</p>
+          </div>
+        </div>
+
+        <div class="field-section">
+          <h4 class="section-label">Bio</h4>
+          <p class="bio-text">BSc final year student interested in deep learning and robotics.</p>
+        </div>
+
+        <div class="stats-grid-2col">
+          <div class="stat-box">
+            <span class="stat-num">0</span>
+            <span class="stat-lbl">Papers</span>
+          </div>
+          <div class="stat-box">
+            <span class="stat-num text-md">Student</span>
+            <span class="stat-lbl">Role</span>
+          </div>
+        </div>
+
+        <div class="download-card">
+          <div class="file-info">
+            <span class="file-icon-blue">📄</span>
+            <div>
+              <strong>hassan_cv.pdf</strong>
+              <p class="text-xs">Uploaded CV / Resume</p>
+            </div>
+          </div>
+          <button class="btn btn-download">⬇ Download</button>
+        </div>
+      </div>
+      <div class="modal-footer-custom">
+        <span class="status-pill warning">Pending</span>
+        <div class="footer-actions">
+          <button class="btn btn-danger-solid" @click="activeModal = null">🗑 Remove</button>
+          <button class="btn btn-outline-custom" @click="activeModal = null">✕ Reject</button>
+          <button class="btn btn-primary-custom" @click="activeModal = null">✓ Accept</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- PENDING USER MODAL (KHATUN) -->
+  <div class="modal-backdrop" :class="{ 'active': activeModal === 'user-khatun' }" @click.self="activeModal = null">
+    <div class="modal-box">
+      <div class="modal-header">
+        <h3>User Profile Review</h3>
+        <button class="close-btn" @click="activeModal = null">✕</button>
+      </div>
+      <div class="modal-body">
+        <div class="user-hero-card">
+          <div class="avatar purple lg">KN</div>
+          <div>
+            <h3>Dr. Khatun N.</h3>
+            <p class="user-email">khatun.n@uiu.ac.bd</p>
+            <p class="user-sub">Faculty · Biotechnology · Joined Jul 15, 2025</p>
+          </div>
+        </div>
+
+        <div class="field-section">
+          <h4 class="section-label">Bio</h4>
+          <p class="bio-text">Ph.D. in Molecular Biology. Research focuses on CRISPR gene editing techniques for crop varieties.</p>
+        </div>
+
+        <div class="stats-grid-2col">
+          <div class="stat-box">
+            <span class="stat-num">1</span>
+            <span class="stat-lbl">Papers</span>
+          </div>
+          <div class="stat-box">
+            <span class="stat-num text-md">Faculty</span>
+            <span class="stat-lbl">Role</span>
+          </div>
+        </div>
+
+        <div class="download-card">
+          <div class="file-info">
+            <span class="file-icon-blue">📄</span>
+            <div>
+              <strong>khatun_cv.pdf</strong>
+              <p class="text-xs">Uploaded CV / Resume</p>
+            </div>
+          </div>
+          <button class="btn btn-download">⬇ Download</button>
+        </div>
+      </div>
+      <div class="modal-footer-custom">
+        <span class="status-pill warning">Pending</span>
+        <div class="footer-actions">
+          <button class="btn btn-danger-solid" @click="activeModal = null">🗑 Remove</button>
+          <button class="btn btn-outline-custom" @click="activeModal = null">✕ Reject</button>
+          <button class="btn btn-primary-custom" @click="activeModal = null">✓ Accept</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ACTIVE USER DETAILS MODAL (ISLAM F.) -->
+  <div class="modal-backdrop" :class="{ 'active': activeModal === 'user-islam' }" @click.self="activeModal = null">
+    <div class="modal-box">
+      <div class="modal-header">
+        <h3>User Profile Review</h3>
+        <button class="close-btn" @click="activeModal = null">✕</button>
+      </div>
+      <div class="modal-body">
+        <div class="user-hero-card">
+          <div class="avatar pink lg">IF</div>
+          <div>
+            <h3>Ms. Islam F.</h3>
+            <p class="user-email">islam.f@uiu.ac.bd</p>
+            <p class="user-sub">Researcher · CSE · Joined Mar 3, 2024</p>
+          </div>
+        </div>
+
+        <div class="field-section">
+          <h4 class="section-label">Bio</h4>
+          <p class="bio-text">MSc student focusing on NLP for Bangla language. 4 publications.</p>
+        </div>
+
+        <div class="stats-grid-2col">
+          <div class="stat-box">
+            <span class="stat-num">4</span>
+            <span class="stat-lbl">Papers</span>
+          </div>
+          <div class="stat-box">
+            <span class="stat-num text-md">Researcher</span>
+            <span class="stat-lbl">Role</span>
+          </div>
+        </div>
+
+        <div class="download-card">
+          <div class="file-info">
+            <span class="file-icon-blue">📄</span>
+            <div>
+              <strong>islam_cv.pdf</strong>
+              <p class="text-xs">Uploaded CV / Resume</p>
+            </div>
+          </div>
+          <button class="btn btn-download">⬇ Download</button>
+        </div>
+
+        <div class="current-works-section">
+          <h4 class="section-label icon-label">⚡ Current Works</h4>
+          <div class="work-cards-list">
+            <div class="work-card">
+              <div class="work-info">
+                <span class="file-icon-blue">📄</span>
+                <div>
+                  <strong>BanglaLexSum: Legal Document Summarizatio...</strong>
+                  <p class="text-xs">Paper</p>
+                </div>
+              </div>
+              <span class="status-pill warning">Under Review</span>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer-custom">
+        <span class="status-pill success">Active</span>
+        <div class="footer-actions">
+          <button class="btn btn-danger-solid" @click="activeModal = null">🗑 Remove</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ACTIVE USER DETAILS MODAL (RAHMAN) -->
+  <div class="modal-backdrop" :class="{ 'active': activeModal === 'user-rahman' }" @click.self="activeModal = null">
+    <div class="modal-box">
+      <div class="modal-header">
+        <h3>User Profile Review</h3>
+        <button class="close-btn" @click="activeModal = null">✕</button>
+      </div>
+      <div class="modal-body">
+        <div class="user-hero-card">
+          <div class="avatar blue lg">RM</div>
+          <div>
+            <h3>Dr. Rahman M.A.</h3>
+            <p class="user-email">rahman@uiu.ac.bd</p>
+            <p class="user-sub">Faculty · CSE · Joined Jan 12, 2024</p>
+          </div>
+        </div>
+
+        <div class="field-section">
+          <h4 class="section-label">Bio</h4>
+          <p class="bio-text">Professor and Lead Researcher in Deep Learning and Computer Vision algorithms.</p>
+        </div>
+
+        <div class="stats-grid-2col">
+          <div class="stat-box">
+            <span class="stat-num">12</span>
+            <span class="stat-lbl">Papers</span>
+          </div>
+          <div class="stat-box">
+            <span class="stat-num text-md">Faculty</span>
+            <span class="stat-lbl">Role</span>
+          </div>
+        </div>
+
+        <div class="download-card">
+          <div class="file-info">
+            <span class="file-icon-blue">📄</span>
+            <div>
+              <strong>rahman_cv.pdf</strong>
+              <p class="text-xs">Uploaded CV / Resume</p>
+            </div>
+          </div>
+          <button class="btn btn-download">⬇ Download</button>
+        </div>
+      </div>
+      <div class="modal-footer-custom">
+        <span class="status-pill success">Active</span>
+        <div class="footer-actions">
+          <button class="btn btn-danger-solid" @click="activeModal = null">🗑 Remove</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ACTIVE USER DETAILS MODAL (HOSSAIN) -->
+  <div class="modal-backdrop" :class="{ 'active': activeModal === 'user-hossain' }" @click.self="activeModal = null">
+    <div class="modal-box">
+      <div class="modal-header">
+        <h3>User Profile Review</h3>
+        <button class="close-btn" @click="activeModal = null">✕</button>
+      </div>
+      <div class="modal-body">
+        <div class="user-hero-card">
+          <div class="avatar green lg">HS</div>
+          <div>
+            <h3>Prof. Hossain S.</h3>
+            <p class="user-email">hossain@uiu.ac.bd</p>
+            <p class="user-sub">Faculty · EEE · Joined Feb 18, 2024</p>
+          </div>
+        </div>
+
+        <div class="field-section">
+          <h4 class="section-label">Bio</h4>
+          <p class="bio-text">Head of EEE research lab specializing in Smart Microgrids and IoT automation.</p>
+        </div>
+
+        <div class="stats-grid-2col">
+          <div class="stat-box">
+            <span class="stat-num">18</span>
+            <span class="stat-lbl">Papers</span>
+          </div>
+          <div class="stat-box">
+            <span class="stat-num text-md">Faculty</span>
+            <span class="stat-lbl">Role</span>
+          </div>
+        </div>
+
+        <div class="download-card">
+          <div class="file-info">
+            <span class="file-icon-blue">📄</span>
+            <div>
+              <strong>hossain_cv.pdf</strong>
+              <p class="text-xs">Uploaded CV / Resume</p>
+            </div>
+          </div>
+          <button class="btn btn-download">⬇ Download</button>
+        </div>
+      </div>
+      <div class="modal-footer-custom">
+        <span class="status-pill success">Active</span>
+        <div class="footer-actions">
+          <button class="btn btn-danger-solid" @click="activeModal = null">🗑 Remove</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- PENDING PAPER REVIEW DETAILS (TRAFFIC) -->
+  <div class="modal-backdrop" :class="{ 'active': activeModal === 'paper-traffic' }" @click.self="activeModal = null">
+    <div class="modal-box lg">
+      <div class="modal-header">
+        <h3>Paper Review</h3>
+        <button class="close-btn" @click="activeModal = null">✕</button>
+      </div>
+      <div class="modal-body">
+        <span class="domain-pill">Artificial Intelligence</span>
+        <h3 class="paper-title-heading">Deep Learning Approaches for Real-Time Traffic Flow Prediction in Smart Cities</h3>
+        
+        <div class="detail-grid-2col">
+          <div class="detail-card">
+            <span class="card-lbl">Department</span>
+            <strong class="card-val">Computer Science & Engineering</strong>
+          </div>
+          <div class="detail-card">
+            <span class="card-lbl">Year</span>
+            <strong class="card-val">2024</strong>
+          </div>
+        </div>
+
+        <div class="field-section">
+          <h4 class="section-label-dark">Authors</h4>
+          <p class="body-text">Dr. Rahman M.A., Prof. Hossain S.K., Ms. Islam F.</p>
+        </div>
+
+        <div class="field-section">
+          <h4 class="section-label-dark">Abstract</h4>
+          <p class="body-text">This study presents a novel deep learning framework combining LSTM networks with spatial graph convolutions to predict traffic flow patterns in the Dhaka metropolitan area.</p>
+        </div>
+
+        <div class="tags-row-custom">
+          <span class="tag-pill">🏷 Deep Learning</span>
+          <span class="tag-pill">🏷 Smart Cities</span>
+          <span class="tag-pill">🏷 Traffic Prediction</span>
+          <span class="tag-pill">🏷 LSTM</span>
+        </div>
+      </div>
+      <div class="modal-footer-custom centered">
+        <button class="btn btn-danger-solid" @click="activeModal = null">🗑 Remove</button>
+        <button class="btn btn-outline-custom" @click="activeModal = null">✕ Reject</button>
+        <button class="btn btn-primary-custom" @click="activeModal = null">✓ Publish</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- PENDING PAPER REVIEW DETAILS (CRISPR) -->
+  <div class="modal-backdrop" :class="{ 'active': activeModal === 'paper-crispr' }" @click.self="activeModal = null">
+    <div class="modal-box lg">
+      <div class="modal-header">
+        <h3>Paper Review</h3>
+        <button class="close-btn" @click="activeModal = null">✕</button>
+      </div>
+      <div class="modal-body">
+        <span class="domain-pill">Biotechnology</span>
+        <h3 class="paper-title-heading">CRISPR-Cas9 Gene Editing for Enhanced Drought Resistance in Boro Rice Varieties</h3>
+        
+        <div class="detail-grid-2col">
+          <div class="detail-card">
+            <span class="card-lbl">Department</span>
+            <strong class="card-val">Biotechnology</strong>
+          </div>
+          <div class="detail-card">
+            <span class="card-lbl">Year</span>
+            <strong class="card-val">2024</strong>
+          </div>
+        </div>
+
+        <div class="field-section">
+          <h4 class="section-label-dark">Authors</h4>
+          <p class="body-text">Dr. Khatun N., Prof. Begum R.</p>
+        </div>
+
+        <div class="field-section">
+          <h4 class="section-label-dark">Abstract</h4>
+          <p class="body-text">Drought severely impairs agricultural yield in northern Bangladesh. This paper investigates targeted CRISPR-Cas9 genome editing in key drought-responsive genes of local Boro rice varieties.</p>
+        </div>
+
+        <div class="tags-row-custom">
+          <span class="tag-pill">🏷 CRISPR</span>
+          <span class="tag-pill">🏷 Gene Editing</span>
+          <span class="tag-pill">🏷 Agriculture</span>
+        </div>
+      </div>
+      <div class="modal-footer-custom centered">
+        <button class="btn btn-danger-solid" @click="activeModal = null">🗑 Remove</button>
+        <button class="btn btn-outline-custom" @click="activeModal = null">✕ Reject</button>
+        <button class="btn btn-primary-custom" @click="activeModal = null">✓ Publish</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- PUBLISHED PAPER DETAILS (BLOCKCHAIN) -->
+  <div class="modal-backdrop" :class="{ 'active': activeModal === 'paper-blockchain' }" @click.self="activeModal = null">
+    <div class="modal-box lg">
+      <div class="modal-header">
+        <h3>Paper Details</h3>
+        <button class="close-btn" @click="activeModal = null">✕</button>
+      </div>
+      <div class="modal-body">
+        <span class="domain-pill">Computer Science</span>
+        <h3 class="paper-title-heading">Blockchain-Enabled Secure Medical Record Sharing in Resource-Constrained Systems</h3>
+        
+        <div class="detail-grid-2col">
+          <div class="detail-card">
+            <span class="card-lbl">Department</span>
+            <strong class="card-val">Computer Science & Engineering</strong>
+          </div>
+          <div class="detail-card">
+            <span class="card-lbl">Year</span>
+            <strong class="card-val">2023</strong>
+          </div>
+        </div>
+
+        <div class="field-section">
+          <h4 class="section-label-dark">Authors</h4>
+          <p class="body-text">Prof. Chowdhury B.R.</p>
+        </div>
+
+        <div class="field-section">
+          <h4 class="section-label-dark">Abstract</h4>
+          <p class="body-text">A decentralized electronic health record sharing protocol that uses lightweight cryptographic operations suited for IoT devices in hospital clinics.</p>
+        </div>
+
+        <div class="tags-row-custom">
+          <span class="tag-pill">🏷 Blockchain</span>
+          <span class="tag-pill">🏷 Healthcare</span>
+          <span class="tag-pill">🏷 Security</span>
+        </div>
+      </div>
+      <div class="modal-footer-custom start">
+        <button class="btn btn-danger-solid" @click="activeModal = null">🗑 Remove</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- PUBLISHED PAPER DETAILS (IOT) -->
+  <div class="modal-backdrop" :class="{ 'active': activeModal === 'paper-iot' }" @click.self="activeModal = null">
+    <div class="modal-box lg">
+      <div class="modal-header">
+        <h3>Paper Details</h3>
+        <button class="close-btn" @click="activeModal = null">✕</button>
+      </div>
+      <div class="modal-body">
+        <span class="domain-pill">Electrical Engineering</span>
+        <h3 class="paper-title-heading">Solar-Powered IoT Sensor Networks for Real-Time Flood Monitoring in Coastal Bangladesh</h3>
+        
+        <div class="detail-grid-2col">
+          <div class="detail-card">
+            <span class="card-lbl">Department</span>
+            <strong class="card-val">Electrical & Electronic Engineering</strong>
+          </div>
+          <div class="detail-card">
+            <span class="card-lbl">Year</span>
+            <strong class="card-val">2024</strong>
+          </div>
+        </div>
+
+        <div class="field-section">
+          <h4 class="section-label-dark">Authors</h4>
+          <p class="body-text">Dr. Uddin K.M., Prof. Begum R.</p>
+        </div>
+
+        <div class="field-section">
+          <h4 class="section-label-dark">Abstract</h4>
+          <p class="body-text">This paper presents a self-sustaining wireless sensor network powered by flexible solar panels, enabling continuous flood level monitoring across coastal stations.</p>
+        </div>
+
+        <div class="tags-row-custom">
+          <span class="tag-pill">🏷 IoT</span>
+          <span class="tag-pill">🏷 Solar Energy</span>
+          <span class="tag-pill">🏷 Flood Monitoring</span>
+        </div>
+      </div>
+      <div class="modal-footer-custom start">
+        <button class="btn btn-danger-solid" @click="activeModal = null">🗑 Remove</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- PUBLISHED PAPER DETAILS (NLP) -->
+  <div class="modal-backdrop" :class="{ 'active': activeModal === 'paper-nlp' }" @click.self="activeModal = null">
+    <div class="modal-box lg">
+      <div class="modal-header">
+        <h3>Paper Details</h3>
+        <button class="close-btn" @click="activeModal = null">✕</button>
+      </div>
+      <div class="modal-body">
+        <span class="domain-pill">Natural Language Processing</span>
+        <h3 class="paper-title-heading">Natural Language Processing for Bangla Legal Document Summarization</h3>
+        
+        <div class="detail-grid-2col">
+          <div class="detail-card">
+            <span class="card-lbl">Department</span>
+            <strong class="card-val">Computer Science & Engineering</strong>
+          </div>
+          <div class="detail-card">
+            <span class="card-lbl">Year</span>
+            <strong class="card-val">2024</strong>
+          </div>
+        </div>
+
+        <div class="field-section">
+          <h4 class="section-label-dark">Authors</h4>
+          <p class="body-text">Dr. Molla S.</p>
+        </div>
+
+        <div class="field-section">
+          <h4 class="section-label-dark">Abstract</h4>
+          <p class="body-text">Applying modern transformer-based summarization architectures tailored to legal terminology and complex syntax in official Bangla legal documents.</p>
+        </div>
+
+        <div class="tags-row-custom">
+          <span class="tag-pill">🏷 NLP</span>
+          <span class="tag-pill">🏷 Bangla</span>
+          <span class="tag-pill">🏷 Legal Tech</span>
+        </div>
+      </div>
+      <div class="modal-footer-custom start">
+        <button class="btn btn-danger-solid" @click="activeModal = null">🗑 Remove</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- PENDING PROJECT DETAILS (SIGNLANG) -->
+  <div class="modal-backdrop" :class="{ 'active': activeModal === 'project-signlang' }" @click.self="activeModal = null">
+    <div class="modal-box lg">
+      <div class="modal-header">
+        <h3>Project Review</h3>
+        <button class="close-btn" @click="activeModal = null">✕</button>
+      </div>
+      <div class="modal-body">
+        <div class="project-hero-card">
+          <h3>AI-Powered Bangla Sign Language Recognition System</h3>
+          <p class="project-sub">Led by Dr. Rahman M.A. · CSE</p>
+          <p class="project-date">Submitted Jul 14, 2025</p>
+        </div>
+
+        <div class="field-section">
+          <h4 class="section-label-dark">Description</h4>
+          <p class="body-text">Developing a real-time sign language recognition system using computer vision and deep learning to assist the hearing-impaired community in Bangladesh.</p>
+        </div>
+
+        <div class="detail-grid-2col">
+          <div class="detail-card">
+            <span class="card-lbl">Team Capacity</span>
+            <strong class="card-val">6/8 members</strong>
+          </div>
+          <div class="detail-card">
+            <span class="card-lbl">Department</span>
+            <strong class="card-val">CSE</strong>
+          </div>
+        </div>
+
+        <div class="field-section">
+          <h4 class="section-label-dark">Required Skills</h4>
+          <div class="skills-row">
+            <span class="skill-pill">Python</span>
+            <span class="skill-pill">TensorFlow</span>
+            <span class="skill-pill">Computer Vision</span>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer-custom centered">
+        <button class="btn btn-danger-solid" @click="activeModal = null">🗑 Remove</button>
+        <button class="btn btn-outline-custom" @click="activeModal = null">✕ Reject</button>
+        <button class="btn btn-primary-custom" @click="activeModal = null">✓ Publish</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- PENDING PROJECT DETAILS (ECG) -->
+  <div class="modal-backdrop" :class="{ 'active': activeModal === 'project-ecg' }" @click.self="activeModal = null">
+    <div class="modal-box lg">
+      <div class="modal-header">
+        <h3>Project Review</h3>
+        <button class="close-btn" @click="activeModal = null">✕</button>
+      </div>
+      <div class="modal-body">
+        <div class="project-hero-card">
+          <h3>Low-Cost Portable ECG Device for Rural Healthcare</h3>
+          <p class="project-sub">Led by Dr. Khatun N. · Biotechnology</p>
+          <p class="project-date">Submitted Jul 16, 2025</p>
+        </div>
+
+        <div class="field-section">
+          <h4 class="section-label-dark">Description</h4>
+          <p class="body-text">Designing an ultra-affordable, portable ECG telemetry unit capable of transmitting cardiac telemetry over standard cellular networks for immediate remote diagnosis.</p>
+        </div>
+
+        <div class="detail-grid-2col">
+          <div class="detail-card">
+            <span class="card-lbl">Team Capacity</span>
+            <strong class="card-val">3/5 members</strong>
+          </div>
+          <div class="detail-card">
+            <span class="card-lbl">Department</span>
+            <strong class="card-val">Biotechnology</strong>
+          </div>
+        </div>
+
+        <div class="field-section">
+          <h4 class="section-label-dark">Required Skills</h4>
+          <div class="skills-row">
+            <span class="skill-pill">Biomedical Engineering</span>
+            <span class="skill-pill">Sensors</span>
+            <span class="skill-pill">Microcontrollers</span>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer-custom centered">
+        <button class="btn btn-danger-solid" @click="activeModal = null">🗑 Remove</button>
+        <button class="btn btn-outline-custom" @click="activeModal = null">✕ Reject</button>
+        <button class="btn btn-primary-custom" @click="activeModal = null">✓ Publish</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ACTIVE PROJECT DETAILS (AQUACULTURE) -->
+  <div class="modal-backdrop" :class="{ 'active': activeModal === 'project-aquaculture' }" @click.self="activeModal = null">
+    <div class="modal-box lg">
+      <div class="modal-header">
+        <h3>Project Details</h3>
+        <button class="close-btn" @click="activeModal = null">✕</button>
+      </div>
+      <div class="modal-body">
+        <div class="project-hero-card">
+          <h3>Smart Aquaculture Monitoring with IoT and ML</h3>
+          <p class="project-sub">Led by Prof. Hossain S.K. · EEE</p>
+          <p class="project-date">Approved Jun 2, 2025</p>
+        </div>
+
+        <div class="field-section">
+          <h4 class="section-label-dark">Description</h4>
+          <p class="body-text">Building an automated monitoring system for fish farms using underwater IoT sensors and machine learning to optimize water quality and feed management.</p>
+        </div>
+
+        <div class="detail-grid-2col">
+          <div class="detail-card">
+            <span class="card-lbl">Team Capacity</span>
+            <strong class="card-val">4/6 members</strong>
+          </div>
+          <div class="detail-card">
+            <span class="card-lbl">Department</span>
+            <strong class="card-val">EEE</strong>
+          </div>
+        </div>
+
+        <div class="field-section">
+          <h4 class="section-label-dark">Required Skills</h4>
+          <div class="skills-row">
+            <span class="skill-pill">IoT</span>
+            <span class="skill-pill">Machine Learning</span>
+            <span class="skill-pill">Arduino</span>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer-custom start">
+        <button class="btn btn-danger-solid" @click="activeModal = null">🗑 Remove</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ACTIVE PROJECT DETAILS (MICROPLASTIC) -->
+  <div class="modal-backdrop" :class="{ 'active': activeModal === 'project-microplastic' }" @click.self="activeModal = null">
+    <div class="modal-box lg">
+      <div class="modal-header">
+        <h3>Project Details</h3>
+        <button class="close-btn" @click="activeModal = null">✕</button>
+      </div>
+      <div class="modal-body">
+        <div class="project-hero-card">
+          <h3>Microplastic Detection in Buriganga River Using Spectroscopy</h3>
+          <p class="project-sub">Led by Prof. Kabir M.H. · Environmental Science</p>
+          <p class="project-date">Approved Dec 1, 2024</p>
+        </div>
+
+        <div class="field-section">
+          <h4 class="section-label-dark">Description</h4>
+          <p class="body-text">Analyzing water sediment samples across 12 monitoring stations along the Buriganga River using FTIR spectroscopy to map microplastic density.</p>
+        </div>
+
+        <div class="detail-grid-2col">
+          <div class="detail-card">
+            <span class="card-lbl">Team Capacity</span>
+            <strong class="card-val">5/5 members (Completed)</strong>
+          </div>
+          <div class="detail-card">
+            <span class="card-lbl">Department</span>
+            <strong class="card-val">Environmental Science</strong>
+          </div>
+        </div>
+
+        <div class="field-section">
+          <h4 class="section-label-dark">Required Skills</h4>
+          <div class="skills-row">
+            <span class="skill-pill">Chemistry</span>
+            <span class="skill-pill">Spectroscopy</span>
+            <span class="skill-pill">Data Analysis</span>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer-custom start">
+        <button class="btn btn-danger-solid" @click="activeModal = null">🗑 Remove</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- REJECTED PROJECT DETAILS (DRONE) -->
+  <div class="modal-backdrop" :class="{ 'active': activeModal === 'project-drone' }" @click.self="activeModal = null">
+    <div class="modal-box lg">
+      <div class="modal-header">
+        <h3>Project Review</h3>
+        <button class="close-btn" @click="activeModal = null">✕</button>
+      </div>
+      <div class="modal-body">
+        <div class="project-hero-card">
+          <h3>Unverified Urban Drone Surveillance Network</h3>
+          <p class="project-sub">Led by Student A. Rahman · CSE</p>
+          <p class="project-date">Reviewed May 10, 2025</p>
+        </div>
+
+        <div class="field-section">
+          <h4 class="section-label-dark">Description</h4>
+          <p class="body-text">Proposal rejected due to missing institutional privacy clearances and lack of compliance with regional airspace regulatory guidelines for aerial video capture.</p>
+        </div>
+
+        <div class="detail-grid-2col">
+          <div class="detail-card">
+            <span class="card-lbl">Status</span>
+            <strong class="card-val text-danger">Rejected</strong>
+          </div>
+          <div class="detail-card">
+            <span class="card-lbl">Department</span>
+            <strong class="card-val">CSE</strong>
+          </div>
+        </div>
+
+        <div class="field-section">
+          <h4 class="section-label-dark">Required Skills</h4>
+          <div class="skills-row">
+            <span class="skill-pill">Drones</span>
+            <span class="skill-pill">Security</span>
+            <span class="skill-pill">Computer Vision</span>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer-custom start">
+        <button class="btn btn-danger-solid" @click="activeModal = null">🗑 Remove</button>
+      </div>
+    </div>
+  </div>
+
+</body>
+</html>
