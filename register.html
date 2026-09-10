@@ -36,15 +36,11 @@
         <div style="display: flex; align-items: center; gap: 16px;">
             <a href="signIn.html" style="color: black; text-decoration: none;">Sign In</a>
 
-
             <div
                 style="width: 87px; height: 28px; border-radius: 16px; background-color: #c06c50; color: white; display: flex; justify-content: center; align-items: center;">
-                <a href="register.html" class="nav_a_color" style="text-decoration: none;color: white;"
-                    style="color: white; text-decoration: none;">Register</a>
-
+                <a href="register.html" class="nav_a_color" style="text-decoration: none;color: white;">Register</a>
             </div>
         </div>
-
     </nav>
 
     <div class="Panel" style="display: flex; width: 100%; height: 100vh;">
@@ -64,47 +60,51 @@
 
         <div class="right-panel"
             style="width: 50%; height: 100vh; display: flex; justify-content: center; align-items: center;flex-direction: column;">
-            <div style="color: #c05332; font-weight: bold; font-size: 36px;">Create account</h1>
-                <p style="text-align: left; font-size: 16px;"> Join the UIU research Community</p>
+            <div style="color: #c05332; font-weight: bold; font-size: 36px;">Create account</div>
+            <p style="text-align: left; font-size: 16px;"> Join the UIU research Community</p>
 
-                <form action="User_dashboard.html"
-                    style="display: flex; flex-direction: column; gap: 16px; width: 300px;">
+            <!-- MySQL Backend এর সাথে যুক্ত Form -->
+            <form action="http://localhost:3000/api/auth/register" method="POST" enctype="multipart/form-data"
+                style="display: flex; flex-direction: column; gap: 16px; width: 300px;">
 
-                    <!-- from e method add korbo backend korar somoi method="post" -->
-                    <label style="font-size: 18px;">Full Name</label>
-                    <input type="text" name="name" placeholder="Dr. Ahmed Rahman" required
-                        style="padding: 8px; border-radius: 4px; border: 1px solid #ccc;">
-                    <label style="font-size: 18px;">Role</label>
-                    <select name="role" style="padding: 8px; border-radius: 4px; border: 1px solid #ccc;">
-                        <option value="student">Student</option>
-                        <option value="teacher">Teacher</option>
-                        <option value="admin">Admin</option>
-                    </select>
-                    <label style="font-size: 18px;">Department</label>
-                    <input type="text" name="name" placeholder="Computer Science /Data Science ..." required
-                        style="padding: 8px; border-radius: 4px; border: 1px solid #ccc;">
-                    <label style="font-size: 18px;">Upload CV/Resume</label>
-                    <input type="file" name="cv" required
-                        style="padding: 8px; border-radius: 4px; border: 1px solid #ccc;">
+                <label style="font-size: 18px;">Full Name</label>
+                <input type="text" name="fullName" placeholder="Dr. Ahmed Rahman" required
+                    style="padding: 8px; border-radius: 4px; border: 1px solid #ccc;">
 
-                    <label style="font-size: 14px; font-weight: bold;">University Email</label>
-                    <input type="email" name="email" placeholder="you@uiu.ac.bd" required
-                        style="padding: 8px; border-radius: 4px; border: 1px solid #ccc;">
-                    <label style="font-size: 14px; font-weight: bold;">Password</label>
-                    <input type="password" name="Enter your password" placeholder="Password" required
-                        style="padding: 8px; border-radius: 4px; border: 1px solid #ccc;">
-                    <a href="forgot_password.html"
-                        style="text-decoration: none; color: #e69275; font-size: 14px; align-self: flex-end;">Forgot
-                        Password?</a>
-                    <button type="submit"
-                        style="padding: 8px; border-radius: 4px; background-color: #c76949; color: white; border: none;">Create
-                        Account</button>
-                </form>
-                <p style="font-size: 14px;">Already registered? <a href="signIn.html"
-                        style="text-decoration: none; color: #e69275; font-size: 16px;">Sign In</a></p>
-            </div>
+                <label style="font-size: 18px;">Role</label>
+                <select name="role" style="padding: 8px; border-radius: 4px; border: 1px solid #ccc;">
+                    <option value="student">Student</option>
+                    <option value="teacher">Teacher</option>
+                    <option value="admin">Admin</option>
+                </select>
+
+                <label style="font-size: 18px;">Department</label>
+                <input type="text" name="department" placeholder="Computer Science / Data Science ..." required
+                    style="padding: 8px; border-radius: 4px; border: 1px solid #ccc;">
+
+                <label style="font-size: 18px;">Upload CV/Resume</label>
+                <input type="file" name="cv" accept=".pdf,.doc,.docx" required
+                    style="padding: 8px; border-radius: 4px; border: 1px solid #ccc;">
+
+                <label style="font-size: 14px; font-weight: bold;">University Email</label>
+                <input type="email" name="email" placeholder="you@uiu.ac.bd" required
+                    style="padding: 8px; border-radius: 4px; border: 1px solid #ccc;">
+
+                <label style="font-size: 14px; font-weight: bold;">Password</label>
+                <input type="password" name="password" placeholder="Password" required
+                    style="padding: 8px; border-radius: 4px; border: 1px solid #ccc;">
+
+                <a href="forgot_password.html"
+                    style="text-decoration: none; color: #e69275; font-size: 14px; align-self: flex-end;">Forgot Password?</a>
+
+                <button type="submit"
+                    style="padding: 8px; border-radius: 4px; background-color: #c76949; color: white; border: none; cursor: pointer;">Create Account</button>
+            </form>
+
+            <p style="font-size: 14px; margin-top: 10px;">Already registered? <a href="signIn.html"
+                    style="text-decoration: none; color: #e69275; font-size: 16px;">Sign In</a></p>
         </div>
-
+    </div>
 </body>
 
 </html>
