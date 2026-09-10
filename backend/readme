@@ -1,9 +1,9 @@
 Before Even u start the Backend Dev . 
 Firstly go to the Backend usign:
-cd backend 
+"cd backend"
 After that:
-npm init -y
-npm install express mysql2 cors multer bcryptjs
-node server.js
+"npm init -y"
+"npm install express mysql2 cors multer bcryptjs"
+"node server.js"
 
 if all of these are sucessfull then it will run smoothly.
