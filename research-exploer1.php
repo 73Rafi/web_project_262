@@ -13,7 +13,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $conn->execute_query('INSERT IGNORE INTO saved_papers (user_id, paper_id) VALUES (?, ?)', [$user['id'], $paper_id]);
     }
     flash('Saved papers updated.');
-    go('research-exploer1.php');
+    go('research-exploer1.php?source=portal');
 }
 $search = is_string($_GET['q'] ?? null) ? trim($_GET['q']) : '';
 $category = is_string($_GET['category'] ?? null) ? $_GET['category'] : '';
@@ -24,6 +24,20 @@ $term = '%' . $search . '%';
 $papers = $conn->execute_query("SELECT p.*, s.paper_id AS saved FROM papers p LEFT JOIN saved_papers s ON s.paper_id = p.id AND s.user_id = ? WHERE p.status = 'approved' AND (p.title LIKE ? OR p.authors LIKE ? OR p.keywords LIKE ?) AND (? = '' OR p.category = ?) AND (? = '' OR p.department = ?) AND (? = 0 OR YEAR(p.created_at) = ?) AND (? = 0 OR s.paper_id IS NOT NULL) ORDER BY p.id DESC LIMIT 100", [$user['id'], $term, $term, $term, $category, $category, $department, $department, $year, $year, (int) $saved_only])->fetch_all(MYSQLI_ASSOC);
 $categories = $conn->query("SELECT DISTINCT category FROM papers WHERE status = 'approved' ORDER BY category");
 $departments = $conn->query("SELECT DISTINCT department FROM papers WHERE status = 'approved' ORDER BY department");
+
+// Old search/bookmark links still open the local portal collection.
+$local_search = isset($_GET['q']) || isset($_GET['category']) || isset($_GET['department']) || isset($_GET['year']) || $saved_only;
+$source = ($_GET['source'] ?? '') === 'portal' || $local_search ? 'portal' : 'crossref';
+$online_search = is_string($_GET['online_q'] ?? null) ? substr(trim($_GET['online_q']), 0, 150) : '';
+$topic = is_string($_GET['topic'] ?? null) ? $_GET['topic'] : 'cs.*';
+$page = max(1, min(100, (int) ($_GET['page'] ?? 1)));
+if ($source === 'crossref') {
+    require __DIR__ . '/backend/crossref.php';
+    $topics = crossref_topics();
+    if (!isset($topics[$topic])) { $topic = 'cs.*'; }
+    $online = fetch_crossref_papers($topic, $online_search, $page);
+    $page_link = 'research-exploer1.php?' . http_build_query(['source' => 'crossref', 'online_q' => $online_search, 'topic' => $topic]);
+}
 
 ?>
 <!DOCTYPE html>
@@ -724,15 +738,62 @@ $departments = $conn->query("SELECT DISTINCT department FROM papers WHERE status
 		<main class="explorer-main"><div class="live-content">
 <?php show_message(); ?>
 
-<h1>Research Explorer</h1><p>Search published papers. Showing up to 100 newest matches.</p>
+<h1>Research Explorer</h1><p>Discover Computer Science research and papers shared by the UIU community.</p>
+<div class="box row" aria-label="Paper collections">
+    <a class="button <?= $source === 'crossref' ? '' : 'secondary' ?>" href="research-exploer1.php?source=crossref" <?= $source === 'crossref' ? 'aria-current="page"' : '' ?>>CSE Papers (Crossref)</a>
+    <a class="button <?= $source === 'portal' ? '' : 'secondary' ?>" href="research-exploer1.php?source=portal" <?= $source === 'portal' ? 'aria-current="page"' : '' ?>>UIU Papers</a>
+</div>
+<?php if ($source === 'crossref'): ?>
 <form class="box" method="get">
+    <input type="hidden" name="source" value="crossref">
+    <label class="field">Search CSE papers
+        <input name="online_q" maxlength="150" placeholder="e.g. machine learning, networks, cybersecurity" value="<?= e($online_search) ?>">
+    </label>
+    <label class="field">Topic
+        <select name="topic">
+            <?php foreach ($topics as $code => $label): ?>
+            <option value="<?= e($code) ?>" <?= $topic === $code ? 'selected' : '' ?>><?= e($label) ?></option>
+            <?php endforeach; ?>
+        </select>
+    </label>
+    <button>Search Papers</button> <a href="research-exploer1.php?source=crossref">Reset</a>
+</form>
+<p class="muted">Source: <a href="https://www.crossref.org" target="_blank" rel="noopener noreferrer">Crossref</a> · Newest first · Includes preprints that may not be peer reviewed.</p>
+<?php if ($online['message']): ?><p class="notice" role="status"><?= e($online['message']) ?></p><?php endif; ?>
+<?php if (!$online['failed']): ?>
+<p><?= number_format($online['total']) ?> matches · Page <?= $page ?> · <?= count($online['papers']) ?> papers shown</p>
+<?php if ($online['fetched_at']): ?><p class="muted">Last fetched: <?= e(gmdate('Y-m-d H:i', $online['fetched_at'])) ?> UTC</p><?php endif; ?>
+<?php if (!$online['papers']): ?><div class="box empty">No papers found. Try another keyword or topic.</div><?php endif; ?>
+<?php foreach ($online['papers'] as $paper): ?>
+<article class="box">
+    <span class="tag"><?= e($paper['categories']) ?></span>
+    <h2><a href="<?= e($paper['url']) ?>" target="_blank" rel="noopener noreferrer"><?= e($paper['title']) ?></a></h2>
+    <p class="muted"><?= e($paper['authors']) ?> · <?= e($paper['date']) ?></p>
+    <?php if ($paper['venue']): ?><p class="muted"><?= e($paper['venue']) ?></p><?php endif; ?>
+    <?php if ($paper['abstract']): ?><details><summary>Read abstract</summary><p><?= e($paper['abstract']) ?></p></details>
+    <?php else: ?><p class="muted">Abstract not provided by the publisher.</p><?php endif; ?>
+    <p class="row">
+        <?php if ($paper['pdf']): ?><a class="button" href="<?= e($paper['pdf']) ?>" target="_blank" rel="noopener noreferrer">Publisher PDF</a><?php endif; ?>
+        <a class="button secondary" href="<?= e($paper['url']) ?>" target="_blank" rel="noopener noreferrer">View Paper / DOI</a>
+    </p>
+</article>
+<?php endforeach; ?>
+<div class="row">
+    <?php if ($page > 1): ?><a class="button secondary" href="<?= e($page_link . '&page=' . ($page - 1)) ?>">Previous</a><?php endif; ?>
+    <?php if ($page < 100 && $page * 10 < $online['total']): ?><a class="button" href="<?= e($page_link . '&page=' . ($page + 1)) ?>">Next</a><?php endif; ?>
+</div>
+<?php endif; ?>
+<?php else: ?>
+<p>Search approved UIU papers. Showing up to 100 newest matches.</p>
+<form class="box" method="get">
+<input type="hidden" name="source" value="portal">
 <label class="field">Search title, author or keyword<input name="q" value="<?= e($search) ?>"></label>
 <div class="grid">
 <label class="field">Category<select name="category"><option value="">All categories</option><?php foreach ($categories as $item): ?><option <?= $category === $item['category'] ? 'selected' : '' ?>><?= e($item['category']) ?></option><?php endforeach; ?></select></label>
 <label class="field">Department<select name="department"><option value="">All departments</option><?php foreach ($departments as $item): ?><option <?= $department === $item['department'] ? 'selected' : '' ?>><?= e($item['department']) ?></option><?php endforeach; ?></select></label>
 <label class="field">Year<input type="number" name="year" min="1900" max="2100" value="<?= $year ?: '' ?>"></label>
 </div><label><input type="checkbox" name="saved" value="1" <?= $saved_only ? 'checked' : '' ?>> Saved papers only</label>
-<p><button>Search</button> <a href="research-exploer1.php">Reset</a></p></form>
+<p><button>Search</button> <a href="research-exploer1.php?source=portal">Reset</a></p></form>
 <p><?= count($papers) ?> papers found</p>
 <?php if (!$papers): ?><div class="box empty">No published papers match your search.</div><?php endif; ?>
 <?php foreach ($papers as $paper): ?>
@@ -741,6 +802,7 @@ $departments = $conn->query("SELECT DISTINCT department FROM papers WHERE status
 <a class="button" href="download.php?type=paper&amp;id=<?= $paper['id'] ?>">Download PDF</a>
 <form class="inline" method="post"><?php csrf_field(); ?><input type="hidden" name="paper_id" value="<?= $paper['id'] ?>"><button class="secondary" name="action" value="<?= $paper['saved'] ? 'unsave' : 'save' ?>"><?= $paper['saved'] ? 'Unsave' : 'Save' ?></button></form>
 </article><?php endforeach; ?>
+<?php endif; ?>
 </div></main>
 	</div>
 

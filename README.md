@@ -81,6 +81,8 @@ Public registration can create only Student or Teacher accounts.
 - Dashboard counts and homepage research loaded from the database.
 - PDF uploads, drafts, submission, admin review and paper downloads.
 - Research search by title/author/keyword, category, department and year.
+- Free Crossref integration for CSE papers, topic/keyword search, abstracts, PDF links
+  and next/previous pages in Research Explorer.
 - Save/unsave papers and view your own submissions.
 - Create projects, join/leave recruiting projects and update owner status.
 - Forum categories, new discussions and replies.
@@ -91,9 +93,30 @@ Reset flow: user requests a reset; admin verifies identity outside the portal;
 admin creates a 30-minute link and privately shares it with the account owner;
 user chooses a new password. **No automatic email service is configured.**
 
-Uploads accept PDF only. Account email is read-only in Settings. Lists show up to
-100 newest records. Pagination, messaging, following, profile photos and SMTP
+Uploads accept PDF only. Account email is read-only in Settings. UIU lists show up to
+100 newest records. Local-list pagination, messaging, following, profile photos and SMTP
 delivery are not implemented in this simple version.
+
+## CSE papers from Crossref
+
+Research Explorer opens **CSE Papers (Crossref)** by default. The **UIU Papers** option
+contains your database papers and existing save/unsave controls. External Crossref
+papers open at their source; they are not inserted into the database or bookmarks.
+
+`backend/crossref.php` calls the [Crossref API](https://www.crossref.org/documentation/retrieve-metadata/rest-api/)
+with PHP cURL and reads JSON metadata. No API key is needed. Enable PHP `curl`
+and allow outbound HTTPS. Keep certificate verification
+enabled; if PHP reports a certificate error, configure a valid `curl.cainfo` CA bundle.
+
+Results are cached for 30 minutes in `backend/cache` (created automatically; must
+be writable). Requests use one connection at a time, with at least 3 seconds between
+calls to keep traffic low. The
+site waits before retrying failed requests and shows cached results when possible.
+The page labels Crossref as the source. Searches combine the selected CSE topic
+with your keywords and rank journal articles by relevance; this is a keyword
+search, not a strict subject classification. Abstracts and PDF links appear only
+when provided by the publisher. Full-text access depends on the publisher.
+No database re-import is needed for this integration.
 
 ## Where the code is
 
@@ -105,6 +128,7 @@ delivery are not implemented in this simple version.
 | `backend/database.sql` | Tables and relationships |
 | `register.php`, `signIn.php`, `logout.php` | Account access |
 | `upload.php`, `research-exploer1.php`, `download.php` | Papers |
+| `backend/crossref.php` | Free CSE paper search and file cache |
 | `Project.php`, `project_details.php` | Projects |
 | `Community_Forum.php`, category pages, `discussion.php` | Forum |
 | `profile.php`, `setting.php`, `notification.php` | Account pages |

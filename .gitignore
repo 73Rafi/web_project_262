@@ -1,4 +1,5 @@
 /backend/config.local.php
+/backend/cache/
 /backend/uploads/*
 !/backend/uploads/.gitkeep
 /backend/node_modules/

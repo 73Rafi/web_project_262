@@ -33,5 +33,10 @@ config.php -> db.php -> common.php -> register.php -> signIn.php
 Tarpor upload.php, Project.php, Community_Forum.php ar admin_index.php.
 Main PHP pages project root e ache; helper/database files backend e ache.
 
+Research Explorer er "CSE Papers (Crossref)" option free API theke CSE paper ane.
+API key ba database import lagbe na. PHP curl enabled thakte hobe.
+"UIU Papers" option e nijeder uploaded/saved papers thakbe.
+API code: backend/crossref.php. Result 30 minute backend/cache e cache hoy.
+
 Password reset automatic email pathay na. Admin identity verify kore
 30-minute one-time reset link generate kore user ke privately dibe.

@@ -21,3 +21,7 @@ The test leaves its generated records in the disposable database. Uploaded files
 are in `backend/uploads`. Do not delete existing real uploads when cleaning tests.
 Browser layout and email delivery are not tested. Password reset is admin-assisted
 and does not send email.
+
+Run `php tests/crossref.php` to check Crossref JSON parsing, topic selection, search
+construction, trusted DOI links, empty results and malformed responses without a network
+connection or database. Live API availability depends on the network and Crossref.
