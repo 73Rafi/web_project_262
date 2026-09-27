@@ -1,0 +1,5 @@
+/backend/config.local.php
+/backend/uploads/*
+!/backend/uploads/.gitkeep
+/backend/node_modules/
+/.test-output/

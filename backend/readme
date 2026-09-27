@@ -1,9 +1,25 @@
-Before Even u start the Backend Dev . 
-Firstly go to the Backend usign:
-"cd backend"
-After that:
-"npm init -y"
-"npm install express mysql2 cors multer bcryptjs"
-"node server.js"
+PHP + MySQL backend — simple setup
 
-if all of these are sucessfull then it will run smoothly.
+1. XAMPP install kore Apache ar MySQL start koro (PHP 8.2+).
+2. Project folder ta xampp/htdocs/web_project_262 er moddhe rakho.
+3. phpMyAdmin theke backend/database.sql import koro.
+4. backend/config.php te database name, username, password thik koro.
+5. Browser e http://localhost/web_project_262/ open koro.
+6. PDF CV diye register kore login koro.
+
+Purono Node database thakle: backup nao, upgrade.sql ekbar import koro,
+tarpor database.sql import koro. Fresh database e upgrade.sql lagbe na.
+
+Admin korte nijer account register kore phpMyAdmin e run koro:
+UPDATE users SET role = 'admin' WHERE email = 'YOUR-EMAIL';
+
+Live Server diye PHP cholbe na. npm/node lagbe na.
+Full instructions ar file explanation: project root er README.md.
+
+Code porar order:
+config.php -> db.php -> common.php -> register.php -> signIn.php
+Tarpor upload.php, Project.php, Community_Forum.php ar admin_index.php.
+Main PHP pages project root e ache; helper/database files backend e ache.
+
+Password reset automatic email pathay na. Admin identity verify kore
+30-minute one-time reset link generate kore user ke privately dibe.

@@ -1,0 +1,9 @@
+; Set these values in your XAMPP php.ini and restart Apache.
+; Do not replace your entire php.ini with this small example.
+upload_max_filesize = 50M
+post_max_size = 55M
+display_errors = Off
+log_errors = On
+; Enable these extensions if they are not already enabled:
+extension = mysqli
+extension = fileinfo
