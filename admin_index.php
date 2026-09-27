@@ -3,13 +3,25 @@ require __DIR__ . '/backend/common.php';
 require_login();
 
 require_admin();
+require __DIR__ . '/backend/admin_account.php';
 $error = '';
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     check_csrf();
     try {
         $id = (int) input('id');
         $action = input('action');
-        if ($action === 'user') {
+        if ($action === 'create_admin') {
+            $current_password = is_string($_POST['current_password'] ?? null) ? $_POST['current_password'] : '';
+            if (!password_verify($current_password, $user['password'])) {
+                throw new InvalidArgumentException('Your current password is incorrect.');
+            }
+            $password = is_string($_POST['password'] ?? null) ? $_POST['password'] : '';
+            if ($password !== ($_POST['confirm_password'] ?? null)) {
+                throw new InvalidArgumentException('New passwords do not match.');
+            }
+            create_admin_account($conn, input('full_name'), input('email'), $password);
+            flash('New admin account created. They can now sign in.');
+        } elseif ($action === 'user') {
             $conn->execute_query("UPDATE users SET is_active = ?, session_version = session_version + 1 WHERE id = ? AND role <> 'admin'", [input('active') === '1' ? 1 : 0, $id]);
             flash('Account status updated.');
         } elseif ($action === 'reset') {
@@ -39,7 +51,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         go('admin_index.php');
     } catch (Throwable $exception) { $conn->rollback(); $error = page_error($exception); }
 }
-$accounts = $conn->query('SELECT id, full_name, email, role, department, is_active FROM users ORDER BY id DESC LIMIT 100')->fetch_all(MYSQLI_ASSOC);
+$accounts = $conn->query('SELECT id, full_name, email, role, department, is_active, cv_path FROM users ORDER BY id DESC LIMIT 100')->fetch_all(MYSQLI_ASSOC);
 $papers = $conn->query("SELECT p.*, u.full_name FROM papers p JOIN users u ON u.id = p.user_id WHERE p.status = 'pending' ORDER BY p.id")->fetch_all(MYSQLI_ASSOC);
 $projects = $conn->query("SELECT p.*, u.full_name FROM projects p JOIN users u ON u.id = p.user_id WHERE p.approval = 'pending' ORDER BY p.id")->fetch_all(MYSQLI_ASSOC);
 $requests = $conn->query('SELECT r.*, u.full_name, u.email FROM password_resets r JOIN users u ON u.id = r.user_id WHERE u.is_active = 1 ORDER BY r.requested_at')->fetch_all(MYSQLI_ASSOC);
@@ -57,29 +69,6 @@ unset($_SESSION['reset_link']);
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
 <link rel="stylesheet" href="portal.css"></head>
 <body>
-
-  <header class="navbar">
-    <div class="nav-left">
-      <div class="logo">
-        <i class="fa-solid fa-graduation-cap"></i>
-        <span>UIU Research Portal</span>
-      </div>
-    </div>
-    
-    <div class="nav-right">
-      <a href="User_dashboard.php" class="nav-item">Dashboard</a>
-      <a href="research-exploer1.php" class="nav-item">Research</a>
-      <a href="Project.php" class="nav-item">Projects</a>
-      <a href="Community_Forum.php" class="nav-item">Forum</a>
-      <a href="upload.php" class="btn-top-upload"><i class="fa-solid fa-upload"></i> Upload</a>
-      <button class="icon-btn"><i class="fa-regular fa-moon"></i></button>
-      <div class="notification-icon">
-        <i class="fa-regular fa-bell"></i>
-        
-      </div>
-      <div class="avatar-circle top-avatar"><?= e(strtoupper(substr($user["full_name"], 0, 1))) ?></div>
-    </div>
-  </header>
 
   <div class="app-container">
     
@@ -113,13 +102,36 @@ unset($_SESSION['reset_link']);
 
 <h1>Admin Control Center</h1><p>Review submissions and manage accounts.</p>
 <?php if ($error): ?><p class="notice error"><?= e($error) ?></p><?php endif; ?>
+<details class="box" <?= input('action') === 'create_admin' && $error ? 'open' : '' ?>>
+    <summary>Add New Admin</summary>
+    <form method="post">
+        <?php csrf_field(); ?>
+        <input type="hidden" name="action" value="create_admin">
+        <label class="field">New admin's full name
+            <input name="full_name" maxlength="255" value="<?= e(input('full_name')) ?>" required>
+        </label>
+        <label class="field">New admin's email
+            <input type="email" name="email" maxlength="255" value="<?= e(input('email')) ?>" required>
+        </label>
+        <label class="field">New admin's password
+            <input type="password" name="password" minlength="8" maxlength="72" autocomplete="new-password" required>
+        </label>
+        <label class="field">Confirm new password
+            <input type="password" name="confirm_password" minlength="8" maxlength="72" autocomplete="new-password" required>
+        </label>
+        <label class="field">Your current password
+            <input type="password" name="current_password" autocomplete="current-password" required>
+        </label>
+        <button>Create Admin Account</button>
+    </form>
+</details>
 <?php if ($reset_link): ?><div class="box"><h2>One-time password reset link</h2><p><a href="<?= e($reset_link) ?>"><?= e($reset_link) ?></a></p><p class="muted">Copy the link address and share it privately. This link is displayed only once.</p></div><?php endif; ?>
 <div class="box row"><a href="#users">Users</a><a href="#papers">Pending papers (<?= count($papers) ?>)</a><a href="#projects">Pending projects (<?= count($projects) ?>)</a><a href="#resets">Password reset requests</a></div>
 <h2 id="papers">Pending Papers</h2><?php if (!$papers): ?><p class="box empty">No papers waiting for review.</p><?php endif; ?>
 <?php foreach ($papers as $paper): ?><article class="box"><h3><?= e($paper['title']) ?></h3><p>Submitted by <?= e($paper['full_name']) ?></p><p><?= nl2br(e($paper['abstract'])) ?></p><p><a href="download.php?type=paper&amp;id=<?= $paper['id'] ?>">Review PDF</a></p><form method="post"><?php csrf_field(); ?><input type="hidden" name="action" value="paper"><input type="hidden" name="id" value="<?= $paper['id'] ?>"><button name="decision" value="approved">Approve</button> <button class="danger" name="decision" value="rejected">Reject</button></form></article><?php endforeach; ?>
 <h2 id="projects">Pending Projects</h2><?php if (!$projects): ?><p class="box empty">No projects waiting for review.</p><?php endif; ?>
 <?php foreach ($projects as $project): ?><article class="box"><h3><?= e($project['title']) ?></h3><p>Led by <?= e($project['full_name']) ?></p><p><?= nl2br(e($project['description'])) ?></p><form method="post"><?php csrf_field(); ?><input type="hidden" name="action" value="project"><input type="hidden" name="id" value="<?= $project['id'] ?>"><button name="decision" value="approved">Approve</button> <button class="danger" name="decision" value="rejected">Reject</button></form></article><?php endforeach; ?>
-<h2 id="users">Users (latest 100)</h2><?php foreach ($accounts as $account): ?><article class="box"><h3><?= e($account['full_name']) ?></h3><p><?= e($account['email']) ?> · <?= e($account['role']) ?> · <?= e($account['department']) ?></p><p><?= $account['is_active'] ? 'Active' : 'Disabled' ?> · <a href="download.php?type=cv&amp;id=<?= $account['id'] ?>">Review CV</a></p>
+<h2 id="users">Users (latest 100)</h2><?php foreach ($accounts as $account): ?><article class="box"><h3><?= e($account['full_name']) ?></h3><p><?= e($account['email']) ?> · <?= e($account['role']) ?> · <?= e($account['department']) ?></p><p><?= $account['is_active'] ? 'Active' : 'Disabled' ?> · <?php if ($account['cv_path'] !== ''): ?><a href="download.php?type=cv&amp;id=<?= $account['id'] ?>">Review CV</a><?php else: ?>No CV uploaded<?php endif; ?></p>
 <?php if ($account['role'] !== 'admin'): ?><form method="post"><?php csrf_field(); ?><input type="hidden" name="action" value="user"><input type="hidden" name="id" value="<?= $account['id'] ?>"><input type="hidden" name="active" value="<?= $account['is_active'] ? 0 : 1 ?>"><button class="secondary"><?= $account['is_active'] ? 'Disable Account' : 'Enable Account' ?></button></form><?php endif; ?></article><?php endforeach; ?>
 <h2 id="resets">Password Reset Requests</h2><p>Verify the person's identity before creating a link.</p><?php if (!$requests): ?><p class="box empty">No reset requests.</p><?php endif; ?>
 <?php foreach ($requests as $request): ?><article class="box"><h3><?= e($request['full_name']) ?></h3><p><?= e($request['email']) ?></p><p class="muted">Requested <?= e($request['requested_at']) ?></p><form method="post"><?php csrf_field(); ?><input type="hidden" name="action" value="reset"><input type="hidden" name="id" value="<?= $request['user_id'] ?>"><button>Identity Verified — Create Reset Link</button></form></article><?php endforeach; ?>

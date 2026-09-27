@@ -43,7 +43,29 @@ accounts: the previous form allowed users to select Admin themselves.
 
 ## Create your admin account
 
-Register normally first. In phpMyAdmin, run this with **your actual email**:
+To create a **new admin without registering first**, open a terminal in the project
+folder and run:
+
+```powershell
+php backend/create_admin.php
+```
+
+If PHP is not on PATH, use XAMPP's PHP executable:
+
+```powershell
+& "C:\xampp\php\php.exe" backend/create_admin.php
+```
+
+Enter the new admin's name, email and password, then confirm the password. The
+terminal displays characters while typing. The script saves a password hash and
+does not require a CV. Sign in through `signIn.php` to open the Admin Panel.
+This setup script works only in the terminal, not through a public browser URL.
+
+Already signed in as an admin? Open **Admin Panel → Add New Admin**. Fill in the
+new account details and confirm using your own current password.
+
+Alternatively, to promote an **existing registered user**, run this in phpMyAdmin
+with that user's actual email (`your-email@example.com` is only a placeholder):
 
 ```sql
 UPDATE users SET role = 'admin' WHERE email = 'your-email@example.com';

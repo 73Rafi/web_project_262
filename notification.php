@@ -23,23 +23,6 @@ $unread = $conn->execute_query('SELECT COUNT(*) AS total FROM notifications WHER
 <link rel="stylesheet" href="portal.css"></head>
 <body>
 
-  <header class="navbar">
-    <div class="nav-left">
-      <div class="logo">
-        <span class="logo-mark">UIU</span>
-        <span>UIU Research Portal</span>
-      </div>
-    </div>
-    
-    <div class="nav-right">
-      <a href="User_dashboard.php" class="nav-item">Dashboard</a>
-      <a href="research-exploer1.php" class="nav-item">Research</a>
-      <a href="Project.php" class="nav-item">Projects</a>
-      <a href="Community_Forum.php" class="nav-item">Forum</a>
-      <a href="upload.php" class="btn-top-upload"><i class="fa-solid fa-upload"></i> Upload</a>
-    </div>
-  </header>
-
   <div class="app-container">
     
     <aside class="sidebar">

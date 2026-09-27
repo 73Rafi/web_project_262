@@ -231,7 +231,7 @@ $departments = $conn->query("SELECT DISTINCT department FROM papers WHERE status
 
 		.page-layout {
 			display: flex;
-			min-height: calc(100vh - 65px);
+			min-height: 100vh;
 		}
 
 		.sidebar {
@@ -675,28 +675,6 @@ $departments = $conn->query("SELECT DISTINCT department FROM papers WHERE status
 <link rel="stylesheet" href="portal.css"></head>
 
 <body>
-	<header>
-		<nav>
-			<div class="brand">
-				<div class="brand-logo">UIU</div>
-				<div class="brand-name" style="font-size: 14px; font-weight: bold; cursor: pointer;" onclick="window.location.href='Home_page.php'">UIU Research Portal</div>
-			</div>
-
-			<div class="nav-links">
-				<a href="User_dashboard.php">Dashboard</a>
-				<a class="nav-button" href="research-exploer1.php">Research</a>
-				<a href="Project.php">Projects</a>
-				<a href="Community_Forum.php">Forum</a>
-				<a class="nav-button" href="upload.php">
-					<i class="fa-solid fa-upload"></i>
-					Upload
-				</a>
-				<i class="fa-regular fa-bell"></i>
-				<div class="top-avatar"><?= e(strtoupper(substr($user["full_name"], 0, 1))) ?></div>
-			</div>
-		</nav>
-	</header>
-
 	<div class="page-layout">
 		<aside class="sidebar">
 			<a class="side-link" href="User_dashboard.php">

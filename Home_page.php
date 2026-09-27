@@ -21,27 +21,6 @@ $projects = $conn->query("SELECT id, title, department FROM projects WHERE appro
 
 <body>
 
-    <header class="navbar">
-        <div class="nav-container">
-            <!-- Website Logo -->
-            <a href="Home_page.php" class="logo">
-                <div class="logo-icon">UIU</div>
-                <div class="logo-text">
-                    <span class="logo-title">UIU Research Portal</span>
-                    <span class="logo-sub">United International University</span>
-                </div>
-            </a>
-
-        
-            <div class="nav-right">
-                <a class="search-btn" href="research-exploer1.php" title="Search">🔍</a>
-                <a href="signIn.php" class="nav-link">Sign In</a>
-                <a href="register.php" class="btn-primary">Join Free</a>
-            </div>
-        </div>
-    </header>
-
-
     <section class="hero-section">
         <div class="hero-container">
         

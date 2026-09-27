@@ -105,5 +105,8 @@ CREATE TABLE IF NOT EXISTS login_attempts (
  INDEX (attempt_key, created_at)
 ) ENGINE=InnoDB;
 
--- Register first. Then promote YOUR account in phpMyAdmin:
+-- NEW ADMIN: from the project terminal, run: php backend/create_admin.php
+-- The script asks for name, email and password. No prior registration is needed.
+-- Existing admins can also use Admin Panel > Add New Admin.
+-- Or promote an EXISTING registered account in phpMyAdmin (replace the email):
 -- UPDATE users SET role = 'admin' WHERE email = 'your-email@example.com';

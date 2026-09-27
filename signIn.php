@@ -53,28 +53,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <link rel="stylesheet" href="portal.css"></head>
 
 <body>
-    <nav style="display: flex; justify-content: space-between; align-items: center; padding: 16px; background-color: white;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); border-radius: 8px;">
-        <div style="display: flex; align-items: center; gap: 8px;">
-            <div
-                style="width: 32px; height: 32px; border-radius: 50%; background-color: #e69275; display: flex; justify-content: center; align-items: center; color: white; font-weight: bold;">
-                UIU
-            </div>
-            <div style="font-size: 14px; font-weight: bold; cursor: pointer;"
-                onclick="window.location.href='Home_page.php'">
-                UIU Research Portal
-            </div>
-        </div>
-        <div style="display: flex; align-items: center; gap: 16px;">
-            <div
-                style="width: 87px; height: 28px; border-radius: 16px; background-color: #c06c50; color: white; display: flex; justify-content: center; align-items: center;">
-                <a href="signIn.php" style="color: white; text-decoration: none;">Sign In</a>
-            </div>
-            <a href="register.php" class="nav_a_color" style="text-decoration: none;color: black;">Register</a>
-        </div>
-
-    </nav>
-
     <div class="Panel" style="display: flex; width: 100%; height: 100vh;">
 
         <div class="left-panel"

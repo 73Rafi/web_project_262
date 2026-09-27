@@ -10,8 +10,20 @@ PHP + MySQL backend — simple setup
 Purono Node database thakle: backup nao, upgrade.sql ekbar import koro,
 tarpor database.sql import koro. Fresh database e upgrade.sql lagbe na.
 
-Admin korte nijer account register kore phpMyAdmin e run koro:
+NEW ADMIN (age register kora lagbe na):
+Project root er terminal e run koro:
+php backend/create_admin.php
+
+PHP command na pele XAMPP path diye PowerShell e run koro:
+& "C:\xampp\php\php.exe" backend/create_admin.php
+
+Name, email, password ar confirm password dao. Tarpor signIn.php diye login koro.
+Terminal e password type korar somoy dekha jabe. Database e hash save hobe.
+Admin dashboard e login kora thakle "Add New Admin" form use korte paro.
+
+Age register kora account ke admin korte phpMyAdmin e run koro:
 UPDATE users SET role = 'admin' WHERE email = 'YOUR-EMAIL';
+YOUR-EMAIL er jaygay registered email dao. Eta new account create kore na.
 
 Live Server diye PHP cholbe na. npm/node lagbe na.
 Full instructions ar file explanation: project root er README.md.

@@ -32,29 +32,6 @@ $replies = $conn->execute_query('SELECT r.*, u.full_name FROM replies r JOIN use
 <link rel="stylesheet" href="portal.css"></head>
 <body>
 
-  <header class="navbar">
-    <div class="nav-left">
-      <div class="logo">
-        <i class="fa-solid fa-graduation-cap"></i>
-        <span>UIU Research Portal</span>
-      </div>
-    </div>
-    
-    <div class="nav-right">
-      <a href="User_dashboard.php" class="nav-item">Dashboard</a>
-      <a href="research-exploer1.php" class="nav-item">Research</a>
-      <a href="Project.php" class="nav-item">Projects</a>
-      <a href="Community_Forum.php" class="nav-item">Forum</a>
-      <a href="upload.php" class="btn-top-upload"><i class="fa-solid fa-upload"></i> Upload</a>
-      <button class="icon-btn"><i class="fa-regular fa-moon"></i></button>
-      <div class="notification-icon">
-        <i class="fa-regular fa-bell"></i>
-        
-      </div>
-      <div class="avatar-circle top-avatar"><?= e(strtoupper(substr($user["full_name"], 0, 1))) ?></div>
-    </div>
-  </header>
-
   <div class="app-container">
     
     <aside class="sidebar">

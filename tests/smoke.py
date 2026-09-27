@@ -82,6 +82,15 @@ check(guest.request('backend/uploads/1789049244070.pdf')[0] == 403, 'direct uplo
 check(guest.request('register.php', {'email': 'bad'})[0] == 403, 'missing CSRF rejected')
 
 suffix = str(time.time_ns())
+new_admin_email = 'admin-' + suffix + '@example.test'
+new_admin_fields = {'action': 'create_admin', 'full_name': 'New Test Admin', 'email': new_admin_email, 'password': PASSWORD, 'confirm_password': PASSWORD, 'current_password': 'wrong'}
+check('current password is incorrect' in admin.post('admin_index.php', new_admin_fields)[2], 'creating admin requires current password')
+new_admin_fields['current_password'] = os.environ['PORTAL_TEST_ADMIN_PASSWORD']
+check('New admin account created' in admin.post('admin_index.php', new_admin_fields)[2], 'admin can create another admin')
+check('already registered' in admin.post('admin_index.php', new_admin_fields)[2], 'duplicate admin email rejected')
+new_admin = Browser()
+check(new_admin.login(new_admin_email)[1].endswith('admin_index.php'), 'new admin can log in')
+check('Download My CV' not in new_admin.request('profile.php')[2], 'admin without CV has no broken CV link')
 email = 'student-' + suffix + '@example.test'
 other_email = 'other-' + suffix + '@example.test'
 fields = {'fullName': 'Test Student', 'role': 'admin', 'department': 'CSE', 'email': email, 'password': PASSWORD}
@@ -95,6 +104,7 @@ check('already registered' in guest.post('register.php', fields, ('cv', 'cv.pdf'
 check('Invalid email or password' in guest.login(email, 'wrong')[2], 'incorrect password rejected')
 check(guest.login(email)[1].endswith('User_dashboard.php'), 'student login')
 check(guest.request('admin_index.php')[0] == 403, 'student admin access denied')
+check(guest.request('admin_index.php', dict(new_admin_fields, csrf=guest.token('profile.php')))[0] == 403, 'student cannot create admin')
 profile = guest.request('profile.php')[2]
 user_id = re.search(r'type=cv&amp;id=(\d+)', profile)[1]
 check(guest.request('download.php?type=cv&id=' + user_id)[3] == PDF, 'own CV download')

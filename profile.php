@@ -24,28 +24,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <link rel="stylesheet" href="portal.css"></head>
 <body>
 
-  <header class="navbar">
-    <div class="nav-left">
-      <div class="logo">
-        <span class="logo-mark">UIU</span>
-        <span>UIU Research Portal</span>
-      </div>
-    </div>
-    
-    <div class="nav-right">
-      <a href="User_dashboard.php" class="nav-item">Dashboard</a>
-      <a href="research-exploer1.php" class="nav-item">Research</a>
-      <a href="Project.php" class="nav-item">Projects</a>
-      <a href="Community_Forum.php" class="nav-item">Forum</a>
-      <button class="btn-top-upload"><i class="fa-solid fa-upload"></i> Upload</button>
-      <div class="notification-icon">
-        <i class="fa-regular fa-bell"></i>
-        
-      </div>
-      <div class="avatar-circle top-avatar"><?= e(strtoupper(substr($user["full_name"], 0, 1))) ?></div>
-    </div>
-  </header>
-
   <div class="app-container">
     
     <aside class="sidebar">
@@ -78,7 +56,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <h1>My Profile</h1><section class="box"><h2><?= e($user['full_name']) ?></h2>
 <p><?= e(ucfirst($user['role'])) ?> · <?= e($user['department']) ?></p><p><?= e($user['email']) ?></p>
 <p><?= nl2br(e($user['bio'] ?: 'Add your research interests in Settings.')) ?></p>
-<a class="button" href="setting.php">Edit Profile</a> <a class="button secondary" href="download.php?type=cv&amp;id=<?= $user['id'] ?>">Download My CV</a></section>
+<a class="button" href="setting.php">Edit Profile</a>
+<?php if ($user['cv_path'] !== ''): ?>
+<a class="button secondary" href="download.php?type=cv&amp;id=<?= $user['id'] ?>">Download My CV</a>
+<?php endif; ?></section>
 <h2>My Papers (<?= count($papers) ?>)</h2>
 <?php if (!$papers): ?><p class="box empty">You have not uploaded any papers yet.</p><?php endif; ?>
 <?php foreach ($papers as $paper): ?><article class="box"><h3><?= e($paper['title']) ?></h3><p><span class="tag"><?= e(ucfirst($paper['status'])) ?></span></p>

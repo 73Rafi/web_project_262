@@ -153,7 +153,7 @@ $recent = $conn->query("SELECT id, title, authors FROM papers WHERE status = 'ap
 
         .dashboard-shell {
             display: flex;
-            min-height: calc(100vh - 65px);
+            min-height: 100vh;
         }
 
         .sidebar {
@@ -500,33 +500,6 @@ $recent = $conn->query("SELECT id, title, authors FROM papers WHERE status = 'ap
 <link rel="stylesheet" href="portal.css"></head>
 
 <body class="open-sans">
-    <header>
-        <nav>
-            <div style="display: flex; align-items: center; gap: 8px;">
-                <div style="width: 32px; height: 32px; border-radius: 50%; background-color: #e69275; display: flex; justify-content: center; align-items: center; color: white; font-weight: bold;">
-                    UIU
-                </div>
-               <div style="font-size: 14px; font-weight: bold; cursor: pointer;" onclick="window.location.href='Home_page.php'">
-                        UIU Research Portal
-                </div>
-            </div>
-            <div style="display: flex; align-items: center; gap: 16px;">
-                <div style="width: 108px; height: 28px; border-radius: 12px; background-color: #e69275; color: white; display: flex; justify-content: center; align-items: center;">
-                    <a href="User_dashboard.php" style="color: white; text-decoration: none;">Dashboard</a>
-                </div>
-                <a href="research-exploer1.php" class="nav_a_color">Research</a>
-                <a href="Project.php" class="nav_a_color">Projects</a>
-                <a href="Community_Forum.php" class="nav_a_color">Forum</a>
-                <div style="width: 87px; height: 28px; border-radius: 16px; background-color: #e69275; color: white; display: flex; justify-content: center; align-items: center;">
-                    <a href="upload.php" style="color: white; text-decoration: none;">Upload</a>
-                </div>
-                <i class="fa-duotone fa-regular fa-bell"></i>
-                <div style="width: 32px; height: 32px; border-radius: 50%; background-color: #e69275; display: flex; justify-content: center; align-items: center; color: white; font-weight: bold;">
-                    <a href="profile.php" style="color: white; text-decoration: none;"><?= e(strtoupper(substr($user["full_name"], 0, 1))) ?></a>
-                </div>
-            </div>
-        </nav>
-    </header>
     <div class="dashboard-shell">
         <aside class="sidebar">
             <a class="side-link active" href="User_dashboard.php"><i class="fa-solid fa-table-columns"></i><span>Dashboard</span></a>
