@@ -602,52 +602,9 @@ $projects = $conn->execute_query("SELECT p.*, u.full_name FROM projects p JOIN u
         .form-submit { background: #155eef; color: #fff; }
     </style>
 <link rel="stylesheet" href="portal.css"></head>
-<body class="open-sans">
-    <div class="page-layout">
-        <aside class="sidebar">
-            <a class="side-link" href="User_dashboard.php">
-                <i class="fa-solid fa-table-columns"></i>
-                <span>Dashboard</span>
-            </a>
-            <a class="side-link" href="research-exploer1.php">
-                <i class="fa-regular fa-folder-open"></i>
-                <span>Research Explorer</span>
-            </a>
-            <a class="side-link active" href="Project.php">
-                <i class="fa-regular fa-folder"></i>
-                <span>Projects</span>
-            </a>
-            <a class="side-link" href="Community_Forum.php">
-                <i class="fa-regular fa-comment"></i>
-                <span>Community Forum</span>
-            </a>
-            <a class="side-link" href="upload.php">
-                <i class="fa-solid fa-upload"></i>
-                <span>Upload Paper</span>
-            </a>
-            <a class="side-link" href="profile.php">
-                <i class="fa-regular fa-user"></i>
-                <span>My Profile</span>
-            </a>
-            <a class="side-link" href="notification.php">
-                <i class="fa-regular fa-bell"></i>
-                <span>Notifications</span>
-            </a>
-            <a class="side-link" href="setting.php">
-                <i class="fa-solid fa-gear"></i>
-                <span>Settings</span>
-            </a>
-
-            <div class="profile">
-                <div class="avatar"><?= e(strtoupper(substr($user["full_name"], 0, 1))) ?></div>
-                <div>
-                    <div class="profile-name"><?= e($user["full_name"]) ?></div>
-                    <span class="profile-email"><?= e($user["email"]) ?></span>
-                </div>
-            </div>
-
-            <form class="logout-form" method="post" action="logout.php"><?php csrf_field(); ?><button>Sign Out</button></form>
-        <?php if ($user["role"] === "admin"): ?><a class="side-link menu-item" href="admin_index.php">Admin Panel</a><?php endif; ?></aside>
+<body class="open-sans portal-page">
+    <div class="page-layout portal-layout">
+        <?php require __DIR__ . '/backend/sidebar.php'; ?>
 
         <main class="project-main"><div class="live-content">
 <?php show_message(); ?>

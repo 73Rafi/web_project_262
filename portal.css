@@ -27,6 +27,58 @@
 .live-content details summary { cursor: pointer; font-weight: 600; padding: 8px 0; }
 .live-content .empty { text-align: center; padding: 32px; color: #64748b; }
 .live-content .unread { border-left: 4px solid #c76949; }
+/* Shared sidebar overrides the older page-specific navigation styles. */
+body.portal-page { height: auto; min-height: 100vh; width: auto; overflow: auto; }
+.portal-layout { display: flex; align-items: flex-start; width: 100%; min-height: 100vh; }
+.portal-layout > main { flex: 1; min-width: 0; }
+.sidebar.portal-sidebar {
+  position: sticky; top: 0; align-self: flex-start;
+  display: flex; flex-direction: column; justify-content: flex-start;
+  flex: 0 0 220px; width: 220px; height: 100vh; height: 100dvh;
+  padding: 16px 12px; overflow-y: auto; box-sizing: border-box;
+  background: #fff; border-right: 1px solid #e3e8f2;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  font-size: 14px; line-height: 1.4;
+}
+.portal-sidebar .portal-sidebar-menu {
+  display: flex; flex-direction: column; align-items: stretch; justify-content: flex-start;
+  gap: 4px; padding: 0; background: transparent;
+}
+.portal-sidebar .portal-sidebar-link {
+  display: flex; align-items: center; gap: 10px;
+  padding: 10px; margin: 0; border-radius: 8px;
+  color: #4b5563; background: transparent; text-decoration: none;
+  font-family: inherit; font-size: 14px; font-weight: 400; line-height: 1.4;
+}
+.portal-sidebar .portal-sidebar-link span,
+.portal-sidebar .portal-sidebar-user span,
+.portal-sidebar .portal-sidebar-logout span { font-family: inherit; }
+.portal-sidebar .portal-sidebar-link i,
+.portal-sidebar .portal-sidebar-logout i { flex: 0 0 18px; width: 18px; text-align: center; color: inherit; }
+.portal-sidebar .portal-sidebar-link:hover { background: #f1f5f9; color: #1e293b; }
+.portal-sidebar .portal-sidebar-link.active { background: #e0ebff; color: #155eef; font-weight: 600; }
+.portal-sidebar .portal-sidebar-link:focus-visible,
+.portal-sidebar .portal-sidebar-logout button:focus-visible { outline: 2px solid #155eef; outline-offset: 2px; }
+.portal-sidebar .portal-sidebar-footer { margin-top: auto; padding: 16px 4px 0; border-top: 1px solid #edf0f6; }
+.portal-sidebar .portal-sidebar-menu { margin-bottom: 24px; }
+.portal-sidebar .portal-sidebar-account { display: flex; align-items: center; gap: 10px; }
+.portal-sidebar .portal-sidebar-avatar {
+  display: flex; align-items: center; justify-content: center; flex: 0 0 32px;
+  width: 32px; height: 32px; border-radius: 50%; background: #155eef; color: #fff;
+  font-family: inherit; font-size: 13px; font-weight: 600;
+}
+.portal-sidebar .portal-sidebar-user { flex: 1; min-width: 0; }
+.portal-sidebar .portal-sidebar-name,
+.portal-sidebar .portal-sidebar-email { display: block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.portal-sidebar .portal-sidebar-name { font-size: 13px; font-weight: 600; color: #1e293b; }
+.portal-sidebar .portal-sidebar-email { margin-top: 2px; font-size: 11px; color: #64748b; }
+.portal-sidebar .portal-sidebar-logout { margin: 12px 0 0; }
+.portal-sidebar .portal-sidebar-logout button {
+  display: flex; align-items: center; gap: 10px; width: 100%; padding: 10px 6px;
+  border: 0; border-radius: 6px; background: transparent; color: #64748b;
+  font: inherit; text-align: left; cursor: pointer;
+}
+.portal-sidebar .portal-sidebar-logout button:hover { background: #f1f5f9; color: #1e293b; }
 @media(max-width: 700px) {
   .live-content .grid { grid-template-columns: 1fr; }
   .live-content .box { padding: 16px; }
@@ -37,4 +89,12 @@
   .Panel { display: block !important; height: auto !important; }
   .Panel .left-panel { display: none !important; }
   .Panel .right-panel { width: 100% !important; height: auto !important; padding: 25px 12px; box-sizing: border-box; }
+  .dashboard-shell.portal-layout { display: block; }
+  .sidebar.portal-sidebar {
+    position: static; width: 100%; height: auto; flex-basis: auto;
+    padding: 16px 12px; border-right: 0; border-bottom: 1px solid #e3e8f2;
+  }
+  .portal-sidebar .portal-sidebar-menu { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); margin-bottom: 16px; }
+  .portal-sidebar .portal-sidebar-link { font-size: 13px; padding: 10px 6px; }
+  .portal-sidebar .portal-sidebar-footer { margin-top: 0; }
 }

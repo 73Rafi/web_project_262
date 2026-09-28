@@ -22,33 +22,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
   <link rel="stylesheet" href="mystyle.css" />
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
 <link rel="stylesheet" href="portal.css"></head>
-<body>
+<body class="portal-page">
 
-  <div class="app-container">
+  <div class="app-container portal-layout">
     
-    <aside class="sidebar">
-      <nav class="sidebar-menu">
-        <a href="User_dashboard.php" class="menu-item"><i class="fa-solid fa-border-all"></i> Dashboard</a>
-        <a href="research-exploer1.php" class="menu-item"><i class="fa-solid fa-book-open"></i> Research Explorer</a>
-        <a href="Project.php" class="menu-item"><i class="fa-solid fa-folder"></i> Projects</a>
-        <a href="Community_Forum.php" class="menu-item"><i class="fa-regular fa-comments"></i> Community Forum</a>
-        <a href="upload.php" class="menu-item"><i class="fa-solid fa-upload"></i> Upload Paper</a>
-        <a href="profile.php" class="menu-item active"><i class="fa-regular fa-user"></i> My Profile</a>
-        <a href="notification.php" class="menu-item"><i class="fa-regular fa-bell"></i> Notifications</a>
-        <a href="setting.php" class="menu-item"><i class="fa-solid fa-gear"></i> Settings</a>
-      </nav>
-
-      <div class="sidebar-footer">
-        <div class="user-info">
-          <div class="avatar-circle side-avatar"><?= e(strtoupper(substr($user["full_name"], 0, 1))) ?></div>
-          <div class="user-details">
-            <span class="user-name"><?= e($user["full_name"]) ?></span>
-            <span class="user-email"><?= e($user["email"]) ?></span>
-          </div>
-        </div>
-        <form class="logout-form" method="post" action="logout.php"><?php csrf_field(); ?><button>Sign Out</button></form>
-      </div>
-    <?php if ($user["role"] === "admin"): ?><a class="side-link menu-item" href="admin_index.php">Admin Panel</a><?php endif; ?></aside>
+    <?php require __DIR__ . '/backend/sidebar.php'; ?>
 
     <main class="main-content"><div class="live-content">
 <?php show_message(); ?>

@@ -5,6 +5,7 @@ Usage: python tests/smoke.py http://127.0.0.1:8000
 The test creates users, PDFs, projects and discussions. Never use a real database.
 """
 import http.cookiejar
+import json
 import os
 import re
 import sys
@@ -113,6 +114,65 @@ other = Browser()
 other.post('register.php', dict(fields, email=other_email, fullName='Other Student'), ('cv', 'cv.pdf', PDF))
 other.login(other_email)
 check(other.request('download.php?type=cv&id=' + user_id)[0] == 403, 'another user CV denied')
+
+# Private chat: only the two participants may read, send or mark messages read.
+other_id = re.search(r'type=cv&amp;id=(\d+)', other.request('profile.php')[2])[1]
+check(Browser().request('chat_api.php?action=inbox')[0] == 401, 'anonymous chat API denied')
+check('Private Messages' in guest.request('Community_Forum.php')[2], 'forum links to private messages')
+check('Other Student' in guest.request('messages.php?q=Other')[2], 'chat people search works')
+check(guest.post('messages.php', {'action': 'start', 'recipient_id': user_id})[0] == 422, 'self chat rejected')
+status, chat_url, chat_html, _ = guest.post('messages.php', {'action': 'start', 'recipient_id': other_id})
+conversation_id = re.search(r'data-conversation-id="(\d+)"', chat_html)[1]
+check(status == 200 and int(conversation_id) > 0, 'private conversation created')
+check(other.post('messages.php', {'action': 'start', 'recipient_id': user_id})[1] == chat_url, 'reverse pair reuses the same conversation')
+student_chat_csrf = guest.token('messages.php')
+other_chat_csrf = other.token('messages.php')
+admin_chat_csrf = admin.token('messages.php')
+chat_fields = {'action': 'send', 'conversation_id': conversation_id, 'body': '<script>alert(1)</script>\nHello বাংলা 👋', 'message_token': uuid.uuid4().hex}
+check(guest.request('chat_api.php', chat_fields)[0] == 403, 'chat send requires CSRF')
+check(admin.request('chat_api.php?action=messages&conversation_id=' + conversation_id)[0] == 404, 'admin cannot read someone else\'s chat')
+check(admin.request('messages.php?conversation_id=' + conversation_id)[0] == 404, 'unrelated user cannot open private chat page')
+check(admin.request('chat_api.php', dict(chat_fields, csrf=admin_chat_csrf))[0] == 404, 'unrelated user cannot send into a private chat')
+check(admin.request('chat_api.php', {'action': 'read', 'conversation_id': conversation_id, 'up_to': '2147483647', 'csrf': admin_chat_csrf})[0] == 404, 'unrelated user cannot mark private chat read')
+status, _, sent, _ = guest.request('chat_api.php', dict(chat_fields, csrf=student_chat_csrf))
+message_id = json.loads(sent)['message']['id']
+check(status == 200, 'chat message sent')
+retry = json.loads(guest.request('chat_api.php', dict(chat_fields, csrf=student_chat_csrf))[2])
+check(retry['message']['id'] == message_id, 'retrying a send does not duplicate a message')
+received = json.loads(other.request('chat_api.php?action=messages&conversation_id=' + conversation_id + '&after_id=0')[2])
+check(len(received['messages']) == 1 and received['messages'][0]['body'] == chat_fields['body'], 'recipient receives text, newlines and Unicode')
+inbox = json.loads(other.request('chat_api.php?action=inbox')[2])['conversations']
+check(inbox[0]['unread_count'] == 1, 'new message increments unread count')
+rendered_chat = other.request('messages.php?conversation_id=' + conversation_id)[2]
+check('&lt;script&gt;alert(1)&lt;/script&gt;' in rendered_chat and '<script>alert(1)</script>' not in rendered_chat, 'chat text is HTML escaped')
+check(json.loads(other.request('chat_api.php?action=inbox')[2])['conversations'][0]['unread_count'] == 1, 'reading API alone does not mark a message seen')
+check(other.request('chat_api.php', {'action': 'read', 'conversation_id': conversation_id, 'up_to': message_id})[0] == 403, 'mark-read requires CSRF')
+other.request('chat_api.php', {'action': 'read', 'conversation_id': conversation_id, 'up_to': message_id, 'csrf': other_chat_csrf})
+seen = json.loads(guest.request('chat_api.php?action=messages&conversation_id=' + conversation_id + '&after_id=' + str(message_id))[2])
+check(seen['peer_read_up_to'] == message_id, 'sender receives Seen status')
+check(json.loads(other.request('chat_api.php?action=inbox')[2])['conversations'][0]['unread_count'] == 0, 'mark-read clears unread count')
+for bad_body in ['', ' ' * 10, 'a' * 2001, '👋' * 2001]:
+    check(guest.request('chat_api.php', dict(chat_fields, csrf=student_chat_csrf, body=bad_body, message_token=uuid.uuid4().hex))[0] == 422, 'invalid or oversized chat message rejected')
+check(guest.request('chat_api.php?action=messages&conversation_id[]=1')[0] == 400, 'invalid chat ID rejected')
+check(other.request('chat_api.php', dict(chat_fields, csrf=other_chat_csrf, body='Hello back', message_token=uuid.uuid4().hex))[0] == 200, 'recipient can reply')
+for number in range(103):
+    status = guest.request('chat_api.php', dict(chat_fields, csrf=student_chat_csrf, body='History ' + str(number), message_token=uuid.uuid4().hex))[0]
+    if status != 200: raise AssertionError('chat history setup failed')
+latest = json.loads(guest.request('chat_api.php?action=messages&conversation_id=' + conversation_id)[2])
+check(len(latest['messages']) == 50 and latest['has_more'], 'chat loads the latest 50 messages')
+older = json.loads(guest.request('chat_api.php?action=messages&conversation_id=' + conversation_id + '&before_id=' + str(latest['messages'][0]['id']))[2])
+check(len(older['messages']) == 50 and older['has_more'] and older['messages'][-1]['id'] < latest['messages'][0]['id'], 'older history pagination has no overlap')
+forward = json.loads(other.request('chat_api.php?action=messages&conversation_id=' + conversation_id + '&after_id=0')[2])
+check(len(forward['messages']) == 100 and forward['has_more'], 'live polling bounds each response to 100 messages')
+remaining = json.loads(other.request('chat_api.php?action=messages&conversation_id=' + conversation_id + '&after_id=' + str(forward['messages'][-1]['id']))[2])
+check(len(remaining['messages']) == 5 and not remaining['has_more'], 'live cursor receives all remaining messages exactly once')
+check([m['id'] for m in forward['messages']] == sorted(m['id'] for m in forward['messages']), 'chat history is chronological')
+admin.post('admin_index.php', {'action': 'user', 'id': other_id, 'active': '0'})
+check(guest.request('chat_api.php', dict(chat_fields, csrf=student_chat_csrf, message_token=uuid.uuid4().hex))[0] == 403, 'cannot send to a disabled account')
+check(other.request('chat_api.php?action=inbox')[0] == 401, 'disabled account loses chat API access')
+check(guest.request('messages.php?conversation_id=' + conversation_id)[0] == 200, 'existing chat remains readable when recipient is disabled')
+admin.post('admin_index.php', {'action': 'user', 'id': other_id, 'active': '1'})
+other.login(other_email)
 
 paper_title = 'Integration Paper ' + suffix
 paper_fields = {'title': paper_title, 'authors': 'Test Student', 'abstract': '<script>alert(1)</script> Research abstract', 'keywords': 'Testing', 'department': 'CSE', 'category': 'Computer Science', 'action': 'publish'}
