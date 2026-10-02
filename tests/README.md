@@ -14,8 +14,7 @@ changes the generated test user's password and account status.
 
 The checks cover authentication, CSRF, role restrictions, private CVs, invalid
 uploads, paper drafts/review/search/bookmarks, project ownership/membership,
-discussion replies, private chat privacy/CSRF/Unicode/retries/history/read receipts,
-notifications, profile editing, password resets, session
+discussion replies, notifications, profile editing, password resets, session
 revocation, account disabling and login attempt limits.
 
 The test leaves its generated records in the disposable database. Uploaded files

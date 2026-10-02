@@ -86,7 +86,6 @@ Public registration can create only Student or Teacher accounts.
 - Save/unsave papers and view your own submissions.
 - Create projects, join/leave recruiting projects and update owner status.
 - Forum categories, new discussions and replies.
-- Private one-to-one messages, inbox unread counts, Seen status and chat history.
 - Profile/bio editing, password changes and notifications with mark-all-read.
 - Admin-assisted password reset with expiring, single-use links.
 
@@ -97,25 +96,6 @@ user chooses a new password. **No automatic email service is configured.**
 Uploads accept PDF only. Account email is read-only in Settings. UIU lists show up to
 100 newest records. Local-list pagination, following, profile photos and SMTP
 delivery are not implemented in this simple version.
-
-## Private messages
-
-Open **Community Forum → Private Messages**, or use the sidebar. Search for a
-person by name and click the message icon to start a conversation. Both users
-can open the same conversation from their inbox. Only those two participants
-can read or send messages; admins do not get access to other people's chats.
-
-For an **existing PHP database**, select `research_portal` in phpMyAdmin and
-import **`backend/chat.sql`**. It only adds the two chat tables. Fresh installations
-already include these tables in `backend/database.sql`.
-
-Messages refresh every three seconds while the page is visible. Enter sends;
-Shift+Enter adds a new line. Text supports up to 2,000 characters. Open chats
-mark messages Seen when you are at the bottom of the history. Use **Load older
-messages** to view earlier history. If JavaScript is disabled, sending works
-with normal form submissions; refresh to receive messages and use Mark as read.
-This version supports text messages; attachments, calls and typing/online
-indicators are not included.
 
 ## CSE papers from Crossref
 
@@ -146,8 +126,6 @@ No database re-import is needed for this integration.
 | `backend/db.php` | Connect to MySQL |
 | `backend/common.php` | Small session, form, escaping and upload helpers |
 | `backend/sidebar.php` | Shared sidebar, active menu links and account/sign-out section |
-| `messages.php`, `chat_api.php`, `backend/chat.php` | Private chat page and participant-protected API |
-| `backend/chat.sql`, `chat.css`, `chat.js` | Existing-database chat setup, layout and live updates |
 | `backend/database.sql` | Tables and relationships |
 | `register.php`, `signIn.php`, `logout.php` | Account access |
 | `upload.php`, `research-exploer1.php`, `download.php` | Papers |

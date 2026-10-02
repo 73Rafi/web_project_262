@@ -16,7 +16,6 @@ $sidebar_links = [
     ['research-exploer1.php', 'fa-regular fa-folder-open', 'Research Explorer'],
     ['Project.php', 'fa-regular fa-folder', 'Projects'],
     ['Community_Forum.php', 'fa-regular fa-comments', 'Community Forum'],
-    ['messages.php', 'fa-regular fa-comment-dots', 'Private Messages'],
     ['upload.php', 'fa-solid fa-upload', 'Upload Paper'],
     ['profile.php', 'fa-regular fa-user', 'My Profile'],
     ['notification.php', 'fa-regular fa-bell', 'Notifications'],

@@ -286,7 +286,6 @@ $discussions = $conn->execute_query('SELECT d.*, u.full_name, (SELECT COUNT(*) F
 <?php show_message(); ?>
 
 <h1><?= e($filter ?: 'Community Forum') ?></h1><p>Ask questions and connect with researchers.</p>
-<p><a class="button" href="messages.php"><i class="fa-regular fa-comment-dots" aria-hidden="true"></i> Private Messages</a></p>
 <div class="box row"><a href="Community_Forum.php">All</a><a href="general_discussion.php">General Discussion</a><a href="research_methods.php">Research Methods</a><a href="career_funding.php">Career &amp; Funding</a><a href="paper_reviews.php">Paper Reviews</a><a href="tools_software.php">Tools &amp; Software</a></div>
 <?php if ($error): ?><p class="notice error"><?= e($error) ?></p><?php endif; ?>
 <details class="box" <?= $error ? 'open' : '' ?>><summary>New Discussion</summary><form method="post"><?php csrf_field(); ?>
