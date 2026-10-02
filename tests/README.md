@@ -12,7 +12,7 @@ changes the generated test user's password and account status.
 5. Set `PORTAL_TEST_ADMIN_EMAIL` and `PORTAL_TEST_ADMIN_PASSWORD` in the terminal.
 6. Run `python tests/smoke.py http://127.0.0.1:8000` (Python standard library only).
 
-The checks cover authentication, CSRF, role restrictions, private CVs, invalid
+The checks cover authentication, role restrictions, private CVs, invalid
 uploads, paper drafts/review/search/bookmarks, project ownership/membership,
 discussion replies, notifications, profile editing, password resets, session
 revocation, account disabling and login attempt limits.

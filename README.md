@@ -12,7 +12,7 @@ Node.js, npm or JavaScript build step is required.
 5. Check `backend/config.php`: database `research_portal`, user `root`, empty
    password, host `127.0.0.1`, port `3306`. Change these if needed.
 6. Open `http://localhost/web_project_262/` in the browser.
-7. Register with a PDF CV (maximum 5 MB), then sign in.
+7. Create an account, then sign in.
 
 PHP does not run by double-clicking HTML files or using VS Code Live Server.
 Use Apache or the PHP development server. Old `.html` links redirect to `.php`.
@@ -140,8 +140,8 @@ No database re-import is needed for this integration.
 
 Each main page starts with PHP to read/write the database, followed by HTML.
 `?` placeholders in `execute_query()` keep user input separate from SQL.
-`e()` escapes values before putting them into HTML. Keep the hidden CSRF token
-and permission checks even though this is a beginner project.
+`e()` escapes values before putting them into HTML. Keep the login and
+permission checks even though this is a beginner project.
 
 Optional local overrides go in `backend/config.local.php` (ignored by Git):
 

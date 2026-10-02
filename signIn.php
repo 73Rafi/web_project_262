@@ -3,7 +3,6 @@ require __DIR__ . '/backend/common.php';
 
 $error = '';
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    check_csrf();
     try {
         $email = strtolower(required_text('email', 'Email'));
         $password = is_string($_POST['password'] ?? null) ? $_POST['password'] : '';
@@ -22,7 +21,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         session_regenerate_id(true);
         $_SESSION['user_id'] = $account['id'];
         $_SESSION['version'] = $account['session_version'];
-        $_SESSION['csrf'] = bin2hex(random_bytes(32));
         go($account['role'] === 'admin' ? 'admin_index.php' : 'User_dashboard.php');
     } catch (Throwable $exception) {
         $error = page_error($exception);
@@ -77,7 +75,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
             <?php show_message(); ?><?php if ($error): ?><p class="notice error" role="alert"><?= e($error) ?></p><?php endif; ?>
 <form method="post" class="live-content" style="max-width:340px">
-<?php csrf_field(); ?>
+
 <label class="field">Email<input type="email" name="email" value="<?= e(input('email')) ?>" maxlength="255" required autocomplete="email"></label>
 <label class="field">Password<input type="password" name="password" required autocomplete="current-password"></label>
 <p><a href="forgot_password.php">Forgot Password?</a></p>

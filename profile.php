@@ -5,7 +5,6 @@ require_login();
 $papers = $conn->execute_query('SELECT * FROM papers WHERE user_id = ? ORDER BY id DESC', [$user['id']])->fetch_all(MYSQLI_ASSOC);
 $projects = $conn->execute_query('SELECT * FROM projects WHERE user_id = ? ORDER BY id DESC', [$user['id']])->fetch_all(MYSQLI_ASSOC);
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    check_csrf();
     $id = (int) input('paper_id');
     $conn->execute_query("UPDATE papers SET status = 'pending' WHERE id = ? AND user_id = ? AND status IN ('draft', 'rejected')", [$id, $user['id']]);
     flash($conn->affected_rows ? 'Paper submitted for review.' : 'Paper could not be submitted.');
@@ -42,7 +41,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <?php if (!$papers): ?><p class="box empty">You have not uploaded any papers yet.</p><?php endif; ?>
 <?php foreach ($papers as $paper): ?><article class="box"><h3><?= e($paper['title']) ?></h3><p><span class="tag"><?= e(ucfirst($paper['status'])) ?></span></p>
 <a href="download.php?type=paper&amp;id=<?= $paper['id'] ?>">Download PDF</a>
-<?php if (in_array($paper['status'], ['draft', 'rejected'], true)): ?><form class="inline" method="post"><?php csrf_field(); ?><input type="hidden" name="paper_id" value="<?= $paper['id'] ?>"><button>Submit for Review</button></form><?php endif; ?>
+<?php if (in_array($paper['status'], ['draft', 'rejected'], true)): ?><form class="inline" method="post"><input type="hidden" name="paper_id" value="<?= $paper['id'] ?>"><button>Submit for Review</button></form><?php endif; ?>
 </article><?php endforeach; ?>
 <h2>My Projects (<?= count($projects) ?>)</h2><?php foreach ($projects as $project): ?><div class="box"><a href="project_details.php?id=<?= $project['id'] ?>"><?= e($project['title']) ?></a> <span class="tag"><?= e($project['approval']) ?></span></div><?php endforeach; ?>
 </div></main>

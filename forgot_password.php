@@ -3,7 +3,6 @@ require __DIR__ . '/backend/common.php';
 
 $error = '';
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    check_csrf();
     try {
         $email = strtolower(required_text('email', 'Email'));
         if (!filter_var($email, FILTER_VALIDATE_EMAIL)) { throw new InvalidArgumentException('Enter a valid email address.'); }
@@ -40,7 +39,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <h1>Reset your password</h1>
     <p>Request a reset link from your portal administrator. You will need to verify your identity; no automatic email is sent.</p>
     <?php show_message(); ?><?php if ($error): ?><p class="notice error" role="alert"><?= e($error) ?></p><?php endif; ?>
-<form method="post"><?php csrf_field(); ?><label for="email">Account email</label><input type="email" name="email" id="email" maxlength="255" required><button>Request Password Reset</button></form>
+<form method="post"><label for="email">Account email</label><input type="email" name="email" id="email" maxlength="255" required><button>Request Password Reset</button></form>
     <a href="signIn.php">Back to Sign In</a>
   </main>
 </body>

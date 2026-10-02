@@ -6,7 +6,6 @@ $filter = '';
 $categories = ['General Discussion', 'Research Methods', 'Career & Funding', 'Paper Reviews', 'Tools & Software'];
 $error = '';
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    check_csrf();
     try {
         $title = required_text('title', 'Title');
         $category = input('category');
@@ -288,7 +287,7 @@ $discussions = $conn->execute_query('SELECT d.*, u.full_name, (SELECT COUNT(*) F
 <h1><?= e($filter ?: 'Community Forum') ?></h1><p>Ask questions and connect with researchers.</p>
 <div class="box row"><a href="Community_Forum.php">All</a><a href="general_discussion.php">General Discussion</a><a href="research_methods.php">Research Methods</a><a href="career_funding.php">Career &amp; Funding</a><a href="paper_reviews.php">Paper Reviews</a><a href="tools_software.php">Tools &amp; Software</a></div>
 <?php if ($error): ?><p class="notice error"><?= e($error) ?></p><?php endif; ?>
-<details class="box" <?= $error ? 'open' : '' ?>><summary>New Discussion</summary><form method="post"><?php csrf_field(); ?>
+<details class="box" <?= $error ? 'open' : '' ?>><summary>New Discussion</summary><form method="post">
 <label class="field">Title<input name="title" maxlength="255" value="<?= e(input('title')) ?>" required></label>
 <label class="field">Category<select name="category"><?php foreach ($categories as $category): ?><option <?= (input('category') ?: $filter) === $category ? 'selected' : '' ?>><?= e($category) ?></option><?php endforeach; ?></select></label>
 <label class="field">Description<textarea name="description" maxlength="10000" required><?= e(input('description')) ?></textarea></label><button>Post Discussion</button></form></details>

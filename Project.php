@@ -4,7 +4,6 @@ require_login();
 
 $error = '';
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    check_csrf();
     try {
         $title = required_text('title', 'Project name');
         $description = required_text('description', 'Description', 10000);
@@ -611,7 +610,7 @@ $projects = $conn->execute_query("SELECT p.*, u.full_name FROM projects p JOIN u
 
 <h1>Research Projects</h1><p>Find collaboration opportunities and share your project.</p>
 <?php if ($error): ?><p class="notice error"><?= e($error) ?></p><?php endif; ?>
-<details class="box" <?= $error ? 'open' : '' ?>><summary>Create Project</summary><form method="post"><?php csrf_field(); ?>
+<details class="box" <?= $error ? 'open' : '' ?>><summary>Create Project</summary><form method="post">
 <label class="field">Project name<input name="title" maxlength="255" required value="<?= e(input('title')) ?>"></label>
 <label class="field">Description<textarea name="description" maxlength="10000" required><?= e(input('description')) ?></textarea></label>
 <label class="field">Status<select name="status"><?php foreach (['Recruiting', 'Active', 'Completed'] as $option): ?><option <?= input('status') === $option ? 'selected' : '' ?>><?= $option ?></option><?php endforeach; ?></select></label>

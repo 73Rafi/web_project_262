@@ -9,7 +9,6 @@ if (!$project || ($project['approval'] !== 'approved' && $project['user_id'] != 
 }
 $error = '';
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    check_csrf();
     try {
         if (input('action') === 'status') {
             if ($project['user_id'] != $user['id']) { http_response_code(403); exit('Only the project owner can change its status.'); }
@@ -57,8 +56,8 @@ $joined = in_array($user['id'], array_column($members, 'id'));
 
 <a href="Project.php">← All projects</a><section class="box"><h1><?= e($project['title']) ?></h1><p>Led by <?= e($project['full_name']) ?></p><p><span class="tag"><?= e($project['status']) ?></span> <span class="tag"><?= e($project['approval']) ?></span></p><p><?= nl2br(e($project['description'])) ?></p></section>
 <?php if ($error): ?><p class="notice error"><?= e($error) ?></p><?php endif; ?>
-<?php if ($project['user_id'] == $user['id']): ?><form class="box" method="post"><?php csrf_field(); ?><label class="field">Project status<select name="status"><?php foreach (['Active', 'Recruiting', 'Completed'] as $option): ?><option <?= $project['status'] === $option ? 'selected' : '' ?>><?= $option ?></option><?php endforeach; ?></select></label><button name="action" value="status">Update Status</button></form>
-<?php elseif ($joined || ($project['approval'] === 'approved' && $project['status'] === 'Recruiting')): ?><form method="post"><?php csrf_field(); ?><button name="action" value="<?= $joined ? 'leave' : 'join' ?>"><?= $joined ? 'Leave Project' : 'Join Project' ?></button></form><?php endif; ?>
+<?php if ($project['user_id'] == $user['id']): ?><form class="box" method="post"><label class="field">Project status<select name="status"><?php foreach (['Active', 'Recruiting', 'Completed'] as $option): ?><option <?= $project['status'] === $option ? 'selected' : '' ?>><?= $option ?></option><?php endforeach; ?></select></label><button name="action" value="status">Update Status</button></form>
+<?php elseif ($joined || ($project['approval'] === 'approved' && $project['status'] === 'Recruiting')): ?><form method="post"><button name="action" value="<?= $joined ? 'leave' : 'join' ?>"><?= $joined ? 'Leave Project' : 'Join Project' ?></button></form><?php endif; ?>
 <section class="box"><h2>Members (<?= count($members) ?>)</h2><?php if (!$members): ?><p>No members yet.</p><?php endif; ?><?php foreach ($members as $member): ?><p><?= e($member['full_name']) ?></p><?php endforeach; ?></section>
 </div></main>
 

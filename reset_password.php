@@ -12,7 +12,6 @@ if (!$reset) {
     $error = 'This reset link is invalid, expired, or already used. Request a new link.';
 }
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && $reset) {
-    check_csrf();
     try {
         $password = is_string($_POST['password'] ?? null) ? $_POST['password'] : '';
         valid_password($password);
@@ -37,5 +36,5 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $reset) {
 <html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Reset Password</title><link rel="stylesheet" href="portal.css"></head>
 <body style="font-family:Arial,sans-serif;background:#f5f6f8;padding:30px"><main class="live-content" style="max-width:440px"><div class="box"><h1>Reset Password</h1>
 <?php if ($error): ?><p class="notice error"><?= e($error) ?></p><?php endif; ?>
-<?php if ($reset): ?><form method="post"><?php csrf_field(); ?><label class="field">New password<input type="password" name="password" minlength="8" maxlength="72" required autocomplete="new-password"></label><button>Save New Password</button></form><?php endif; ?>
+<?php if ($reset): ?><form method="post"><label class="field">New password<input type="password" name="password" minlength="8" maxlength="72" required autocomplete="new-password"></label><button>Save New Password</button></form><?php endif; ?>
 <p><a href="signIn.php">Back to Sign In</a></p></div></main></body></html>

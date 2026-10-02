@@ -3,8 +3,6 @@ require __DIR__ . '/backend/common.php';
 
 $error = '';
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    check_csrf();
-    $cv = null;
     try {
         $name = required_text('fullName', 'Full name');
         $department = required_text('department', 'Department');
@@ -22,13 +20,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         if ($exists) {
             throw new InvalidArgumentException('This email is already registered.');
         }
-        $cv = save_pdf('cv', 5);
         $hash = password_hash($password, PASSWORD_BCRYPT);
-        $conn->execute_query('INSERT INTO users (full_name, role, department, email, password, cv_path) VALUES (?, ?, ?, ?, ?, ?)', [$name, $role, $department, $email, $hash, $cv]);
+        $conn->execute_query("INSERT INTO users (full_name, role, department, email, password, cv_path) VALUES (?, ?, ?, ?, ?, '')", [$name, $role, $department, $email, $hash]);
         flash('Account created. You can now sign in.');
         go('signIn.php');
     } catch (Throwable $exception) {
-        remove_upload($cv);
         $error = $exception instanceof mysqli_sql_exception && $exception->getCode() === 1062 ? 'This email is already registered.' : page_error($exception);
     }
 }
@@ -79,12 +75,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
             <!-- MySQL Backend এর সাথে যুক্ত Form -->
             <?php show_message(); ?><?php if ($error): ?><p class="notice error" role="alert"><?= e($error) ?></p><?php endif; ?>
-<form method="post" enctype="multipart/form-data" class="live-content" style="max-width:340px">
-<?php csrf_field(); ?>
+<form method="post" class="live-content" style="max-width:340px">
+
 <label class="field">Full name<input name="fullName" maxlength="255" value="<?= e(input('fullName')) ?>" required autocomplete="name"></label>
 <label class="field">Role<select name="role"><option value="student">Student</option><option value="teacher" <?= input('role') === 'teacher' ? 'selected' : '' ?>>Teacher</option></select></label>
 <label class="field">Department<input name="department" maxlength="255" value="<?= e(input('department')) ?>" required></label>
-<label class="field">CV / Resume (PDF, up to 5 MB)<input type="file" name="cv" accept="application/pdf,.pdf" required></label>
 <label class="field">Email<input type="email" name="email" maxlength="255" value="<?= e(input('email')) ?>" required autocomplete="email"></label>
 <label class="field">Password<input type="password" name="password" minlength="8" maxlength="72" required autocomplete="new-password"></label>
 <button type="submit">Create Account</button>

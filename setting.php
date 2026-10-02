@@ -4,7 +4,6 @@ require_login();
 
 $error = '';
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    check_csrf();
     try {
         if (input('action') === 'password') {
             $current = is_string($_POST['current_password'] ?? null) ? $_POST['current_password'] : '';
@@ -50,13 +49,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <?php show_message(); ?>
 
 <h1>Settings</h1><p>Update your profile and password.</p><?php if ($error): ?><p class="notice error"><?= e($error) ?></p><?php endif; ?>
-<form method="post" class="box"><?php csrf_field(); ?><h2>Profile</h2>
+<form method="post" class="box"><h2>Profile</h2>
 <label class="field">Full name<input name="fullName" maxlength="255" value="<?= e($_SERVER['REQUEST_METHOD'] === 'POST' && input('action') === 'profile' ? input('fullName') : $user['full_name']) ?>" required></label>
 <label class="field">Email<input value="<?= e($user['email']) ?>" readonly></label>
 <label class="field">Department<input name="department" maxlength="255" value="<?= e($_SERVER['REQUEST_METHOD'] === 'POST' && input('action') === 'profile' ? input('department') : $user['department']) ?>" required></label>
 <label class="field">Bio<textarea name="bio" maxlength="5000"><?= e($_SERVER['REQUEST_METHOD'] === 'POST' && input('action') === 'profile' ? input('bio') : $user['bio']) ?></textarea></label>
 <button name="action" value="profile">Save Changes</button></form>
-<form method="post" class="box"><?php csrf_field(); ?><h2>Change Password</h2>
+<form method="post" class="box"><h2>Change Password</h2>
 <label class="field">Current password<input type="password" name="current_password" autocomplete="current-password" required></label>
 <label class="field">New password<input type="password" name="password" minlength="8" maxlength="72" autocomplete="new-password" required></label>
 <button name="action" value="password">Change Password</button></form>

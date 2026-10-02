@@ -3,7 +3,6 @@ require __DIR__ . '/backend/common.php';
 require_login();
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    check_csrf();
     $paper_id = (int) input('paper_id');
     $paper = $conn->execute_query("SELECT id FROM papers WHERE id = ? AND status = 'approved'", [$paper_id])->fetch_assoc();
     if (!$paper) { http_response_code(404); exit('Paper not found.'); }
@@ -757,7 +756,7 @@ if ($source === 'crossref') {
 <article class="box"><h2><?= e($paper['title']) ?></h2><p class="muted"><?= e($paper['authors']) ?> · <?= e($paper['department']) ?> · <?= e(substr($paper['created_at'], 0, 4)) ?></p>
 <p><?= nl2br(e($paper['abstract'])) ?></p><p><span class="tag"><?= e($paper['category']) ?></span> <?= e($paper['keywords']) ?></p>
 <a class="button" href="download.php?type=paper&amp;id=<?= $paper['id'] ?>">Download PDF</a>
-<form class="inline" method="post"><?php csrf_field(); ?><input type="hidden" name="paper_id" value="<?= $paper['id'] ?>"><button class="secondary" name="action" value="<?= $paper['saved'] ? 'unsave' : 'save' ?>"><?= $paper['saved'] ? 'Unsave' : 'Save' ?></button></form>
+<form class="inline" method="post"><input type="hidden" name="paper_id" value="<?= $paper['id'] ?>"><button class="secondary" name="action" value="<?= $paper['saved'] ? 'unsave' : 'save' ?>"><?= $paper['saved'] ? 'Unsave' : 'Save' ?></button></form>
 </article><?php endforeach; ?>
 <?php endif; ?>
 </div></main>

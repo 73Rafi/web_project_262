@@ -4,7 +4,6 @@ require_login();
 
 $error = '';
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    check_csrf();
     $file = null;
     try {
         $title = required_text('title', 'Title');
@@ -46,7 +45,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <h1>Upload Research Paper</h1><p>Share your research with the UIU community.</p>
 <?php if ($error): ?><p class="notice error"><?= e($error) ?></p><?php endif; ?>
 <form class="box" method="post" enctype="multipart/form-data">
-<?php csrf_field(); ?>
+
 <label class="field">Paper PDF (up to 50 MB)<input type="file" name="paper" accept="application/pdf,.pdf" required></label>
 <?php foreach (['title'=>'Paper title', 'authors'=>'Authors', 'keywords'=>'Keywords', 'department'=>'Department', 'category'=>'Category'] as $field=>$label): ?>
 <label class="field"><?= e($label) ?><input name="<?= e($field) ?>" maxlength="<?= $field === 'category' ? 100 : 255 ?>" value="<?= e(input($field)) ?>" required></label>

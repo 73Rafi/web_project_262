@@ -5,7 +5,7 @@ PHP + MySQL backend — simple setup
 3. phpMyAdmin theke backend/database.sql import koro.
 4. backend/config.php te database name, username, password thik koro.
 5. Browser e http://localhost/web_project_262/ open koro.
-6. PDF CV diye register kore login koro.
+6. Account register kore login koro.
 
 Purono Node database thakle: backup nao, upgrade.sql ekbar import koro,
 tarpor database.sql import koro. Fresh database e upgrade.sql lagbe na.

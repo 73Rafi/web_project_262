@@ -56,16 +56,7 @@ class Browser:
         content = response.read()
         return response.status, response.url, content.decode('utf-8', errors='replace'), content
 
-    def token(self, page):
-        status, _, text, _ = self.request(page)
-        check(status == 200, page.split('?')[0] + ' loads')
-        match = re.search(r'name="csrf" value="([a-f0-9]+)"', text)
-        if not match:
-            raise AssertionError('CSRF token missing on ' + page)
-        return match[1]
-
     def post(self, page, fields, file=None):
-        fields = dict(fields, csrf=self.token(page))
         return self.request(page, fields, file)
 
     def login(self, email, password=PASSWORD):
@@ -79,7 +70,6 @@ guest = Browser()
 check(guest.request('User_dashboard.php')[1].endswith('signIn.php'), 'guest cannot access dashboard')
 check(guest.request('backend/database.sql')[0] == 403, 'database source blocked')
 check(guest.request('backend/uploads/1789049244070.pdf')[0] == 403, 'direct upload access blocked')
-check(guest.request('register.php', {'email': 'bad'})[0] == 403, 'missing CSRF rejected')
 
 suffix = str(time.time_ns())
 new_admin_email = 'admin-' + suffix + '@example.test'
@@ -94,23 +84,23 @@ check('Download My CV' not in new_admin.request('profile.php')[2], 'admin withou
 email = 'student-' + suffix + '@example.test'
 other_email = 'other-' + suffix + '@example.test'
 fields = {'fullName': 'Test Student', 'role': 'admin', 'department': 'CSE', 'email': email, 'password': PASSWORD}
-check('Choose Student or Teacher' in guest.post('register.php', fields, ('cv', 'cv.pdf', PDF))[2], 'public admin registration rejected')
+check('Choose Student or Teacher' in guest.post('register.php', fields)[2], 'public admin registration rejected')
 fields['role'] = 'student'
-check('real PDF' in guest.post('register.php', fields, ('cv', 'fake.pdf', b'not a PDF'))[2], 'fake PDF rejected')
 invalid = dict(fields, password='')
-check('between 8 and 72' in guest.post('register.php', invalid, ('cv', 'cv.pdf', PDF))[2], 'empty password rejected')
-check(guest.post('register.php', fields, ('cv', 'cv.pdf', PDF))[1].endswith('signIn.php'), 'registration succeeds')
-check('already registered' in guest.post('register.php', fields, ('cv', 'cv.pdf', PDF))[2], 'duplicate email rejected')
+check('between 8 and 72' in guest.post('register.php', invalid)[2], 'empty password rejected')
+check(guest.post('register.php', fields)[1].endswith('signIn.php'), 'registration succeeds')
+check('already registered' in guest.post('register.php', fields)[2], 'duplicate email rejected')
 check('Invalid email or password' in guest.login(email, 'wrong')[2], 'incorrect password rejected')
 check(guest.login(email)[1].endswith('User_dashboard.php'), 'student login')
 check(guest.request('admin_index.php')[0] == 403, 'student admin access denied')
-check(guest.request('admin_index.php', dict(new_admin_fields, csrf=guest.token('profile.php')))[0] == 403, 'student cannot create admin')
+check(guest.request('admin_index.php', new_admin_fields)[0] == 403, 'student cannot create admin')
 profile = guest.request('profile.php')[2]
-user_id = re.search(r'type=cv&amp;id=(\d+)', profile)[1]
-check(guest.request('download.php?type=cv&id=' + user_id)[3] == PDF, 'own CV download')
+check('Download My CV' not in profile, 'new user has no CV link')
+accounts = admin.request('admin_index.php')[2]
+user_id = re.search(re.escape(email) + r'.*?name="id" value="(\d+)"', accounts, re.S)[1]
 
 other = Browser()
-other.post('register.php', dict(fields, email=other_email, fullName='Other Student'), ('cv', 'cv.pdf', PDF))
+other.post('register.php', dict(fields, email=other_email, fullName='Other Student'))
 other.login(other_email)
 check(other.request('download.php?type=cv&id=' + user_id)[0] == 403, 'another user CV denied')
 
@@ -191,8 +181,7 @@ admin.post('admin_index.php', {'action': 'user', 'id': user_id, 'active': '0'})
 check(guest.request('profile.php')[1].endswith('signIn.php'), 'disabled account loses access')
 admin.post('admin_index.php', {'action': 'user', 'id': user_id, 'active': '1'})
 check(guest.login(email, new_password)[1].endswith('User_dashboard.php'), 're-enabled account can sign in')
-csrf = guest.token('profile.php')
-check(guest.request('logout.php', {'csrf': csrf})[1].endswith('signIn.php'), 'logout redirects')
+check(guest.request('logout.php', {})[1].endswith('signIn.php'), 'logout redirects')
 check(guest.request('profile.php')[1].endswith('signIn.php'), 'logout clears access')
 for _ in range(5):
     guest.login(email, 'invalid')

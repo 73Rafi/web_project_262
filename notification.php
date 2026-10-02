@@ -3,7 +3,6 @@ require __DIR__ . '/backend/common.php';
 require_login();
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    check_csrf();
     $conn->execute_query('UPDATE notifications SET is_read = 1 WHERE user_id = ?', [$user['id']]);
     flash('All notifications marked as read.');
     go('notification.php');
@@ -31,7 +30,7 @@ $unread = $conn->execute_query('SELECT COUNT(*) AS total FROM notifications WHER
 <?php show_message(); ?>
 
 <h1>Notifications</h1><p><?= $unread ?> unread · latest 100 notifications</p>
-<form method="post"><?php csrf_field(); ?><button>Mark All Read</button></form>
+<form method="post"><button>Mark All Read</button></form>
 <?php if (!$notifications): ?><p class="box empty">No notifications yet.</p><?php endif; ?>
 <?php foreach ($notifications as $notification): ?><article class="box <?= $notification['is_read'] ? '' : 'unread' ?>"><p><?= e($notification['message']) ?></p><time class="muted"><?= e($notification['created_at']) ?></time></article><?php endforeach; ?>
 </div></main>

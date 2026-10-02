@@ -43,7 +43,7 @@ if ($user['role'] === 'admin') {
             </div>
         </div>
         <form class="portal-sidebar-logout" method="post" action="logout.php">
-            <?php csrf_field(); ?>
+
             <button type="submit"><i class="fa-solid fa-right-from-bracket" aria-hidden="true"></i><span>Sign Out</span></button>
         </form>
     </div>
