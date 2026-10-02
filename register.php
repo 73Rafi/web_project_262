@@ -1,94 +1,257 @@
 <?php
 require __DIR__ . '/backend/common.php';
 
-$error = '';
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    try {
-        $name = required_text('fullName', 'Full name');
-        $department = required_text('department', 'Department');
-        $email = strtolower(required_text('email', 'Email'));
-        $role = input('role');
-        $password = is_string($_POST['password'] ?? null) ? $_POST['password'] : '';
-        if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
-            throw new InvalidArgumentException('Enter a valid email address.');
+$error = "";
+
+if ($_SERVER["REQUEST_METHOD"] == "POST") {
+
+    // Form data নেওয়া
+    $name = $_POST["fullName"];
+    $role = $_POST["role"];
+    $department = $_POST["department"];
+    $email = $_POST["email"];
+    $password = $_POST["password"];
+
+    // Empty check
+    if (
+        empty($name) ||
+        empty($department) ||
+        empty($email) ||
+        empty($password)
+    ) {
+        $error = "Please fill all fields.";
+    }
+
+    // Email check
+    elseif (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+        $error = "Enter a valid email.";
+    }
+
+    // Password check
+    elseif (strlen($password) < 8) {
+        $error = "Password must be at least 8 characters.";
+    }
+
+    else {
+
+        // Check email already exists
+        $stmt = $conn->prepare(
+            "SELECT id FROM users WHERE email = ?"
+        );
+
+        $stmt->bind_param("s", $email);
+        $stmt->execute();
+
+        $result = $stmt->get_result();
+
+        if ($result->num_rows > 0) {
+
+            $error = "Email already registered.";
+
+        } else {
+
+            // Password encrypt/hash
+            $hashedPassword = password_hash(
+                $password,
+                PASSWORD_DEFAULT
+            );
+
+            // Insert user
+            $stmt = $conn->prepare(
+                "INSERT INTO users
+                (full_name, role, department, email, password, cv_path)
+                VALUES (?, ?, ?, ?, ?, '')"
+            );
+
+            $stmt->bind_param(
+                "sssss",
+                $name,
+                $role,
+                $department,
+                $email,
+                $hashedPassword
+            );
+
+            if ($stmt->execute()) {
+
+                header("Location: signIn.php");
+                exit;
+
+            } else {
+
+                $error = "Registration failed.";
+            }
         }
-        if (!in_array($role, ['student', 'teacher'], true)) {
-            throw new InvalidArgumentException('Choose Student or Teacher.');
-        }
-        valid_password($password);
-        $exists = $conn->execute_query('SELECT id FROM users WHERE email = ?', [$email])->fetch_assoc();
-        if ($exists) {
-            throw new InvalidArgumentException('This email is already registered.');
-        }
-        $hash = password_hash($password, PASSWORD_BCRYPT);
-        $conn->execute_query("INSERT INTO users (full_name, role, department, email, password, cv_path) VALUES (?, ?, ?, ?, ?, '')", [$name, $role, $department, $email, $hash]);
-        flash('Account created. You can now sign in.');
-        go('signIn.php');
-    } catch (Throwable $exception) {
-        $error = $exception instanceof mysqli_sql_exception && $exception->getCode() === 1062 ? 'This email is already registered.' : page_error($exception);
     }
 }
-
 ?>
+
+
 <!DOCTYPE html>
 <html lang="en">
 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
     <title>Register</title>
 
-    <style>
-        ul {
-            list-style-type: none;
-            margin: 0;
-            padding: 0;
-            display: flex;
-            flex-direction: column;
-            align-items: flex-start;
-            gap: 10px;
-            margin-top: 20px;
-        }
-    </style>
-<link rel="stylesheet" href="portal.css"></head>
+    <link rel="stylesheet" href="portal.css">
+</head>
 
 <body>
-    <div class="Panel" style="display: flex; width: 100%; height: 100vh;">
 
-        <div class="left-panel"
-            style="background-color: #EA5F34; width: 50%; height: 100vh; display: flex; gap:15px 20px;padding: 0 8%; box-sizing: border-box; justify-content: center; align-items: flex-start;flex-direction: column;">
-            <h1 style="color: white; font-weight: bold;"> Advanced Research,<br>Together.</h1>
-            <p style="color: rgb(243, 238, 238); font-size: 16px;">Join UIU's research
-                community to discover papers, Collaborate on <br style="gap: 5px;">projects and make an impact.
-            </p>
-            <ul>
-                <li style="color: white; font-size: 18px; text-align: center;">Access thousand of Research Papers</li>
-                <li style="color: white; font-size: 18px; text-align: center;">Collaborate with UIU Researchers</li>
-                <li style="color: white; font-size: 18px; text-align: center;">Publish and share your work</li>
-            </ul>
-        </div>
+<div class="Panel"
+     style="display:flex; width:100%; height:100vh;">
 
-        <div class="right-panel"
-            style="width: 50%; height: 100vh; display: flex; justify-content: center; align-items: center;flex-direction: column;">
-            <div style="color: #c05332; font-weight: bold; font-size: 36px;">Create account</div>
-            <p style="text-align: left; font-size: 16px;"> Join the UIU research Community</p>
+    <!-- LEFT SIDE -->
+    <div class="left-panel"
+         style="
+         background-color:#EA5F34;
+         width:50%;
+         height:100vh;
+         display:flex;
+         padding:0 8%;
+         box-sizing:border-box;
+         justify-content:center;
+         align-items:flex-start;
+         flex-direction:column;
+         ">
 
-            <!-- MySQL Backend এর সাথে যুক্ত Form -->
-            <?php show_message(); ?><?php if ($error): ?><p class="notice error" role="alert"><?= e($error) ?></p><?php endif; ?>
-<form method="post" class="live-content" style="max-width:340px">
+        <h1 style="color:white;">
+            Advanced Research,<br>
+            Together.
+        </h1>
 
-<label class="field">Full name<input name="fullName" maxlength="255" value="<?= e(input('fullName')) ?>" required autocomplete="name"></label>
-<label class="field">Role<select name="role"><option value="student">Student</option><option value="teacher" <?= input('role') === 'teacher' ? 'selected' : '' ?>>Teacher</option></select></label>
-<label class="field">Department<input name="department" maxlength="255" value="<?= e(input('department')) ?>" required></label>
-<label class="field">Email<input type="email" name="email" maxlength="255" value="<?= e(input('email')) ?>" required autocomplete="email"></label>
-<label class="field">Password<input type="password" name="password" minlength="8" maxlength="72" required autocomplete="new-password"></label>
-<button type="submit">Create Account</button>
-</form>
+        <p style="color:white;">
+            Join UIU's research community to discover papers,
+            collaborate on projects and make an impact.
+        </p>
 
-            <p style="font-size: 14px; margin-top: 10px;">Already registered? <a href="signIn.php"
-                    style="text-decoration: none; color: #e69275; font-size: 16px;">Sign In</a></p>
-        </div>
+        <ul>
+            <li>Access thousands of Research Papers</li>
+            <li>Collaborate with UIU Researchers</li>
+            <li>Publish and share your work</li>
+        </ul>
+
     </div>
-</body>
 
+
+    <!-- RIGHT SIDE -->
+    <div class="right-panel"
+         style="
+         width:50%;
+         height:100vh;
+         display:flex;
+         justify-content:center;
+         align-items:center;
+         flex-direction:column;
+         ">
+
+        <h1 style="color:#c05332;">
+            Create Account
+        </h1>
+
+        <p>Join the UIU Research Community</p>
+
+
+        <!-- Error Message -->
+
+        <?php
+        if ($error != "") {
+            echo "<p style='color:red;'>$error</p>";
+        }
+        ?>
+
+
+        <!-- Registration Form -->
+
+        <form method="POST">
+
+            <label>Full Name</label>
+            <br>
+
+            <input
+                type="text"
+                name="fullName"
+                required
+            >
+
+            <br><br>
+
+
+            <label>Role</label>
+            <br>
+
+            <select name="role">
+
+                <option value="student">
+                    Student
+                </option>
+
+                <option value="teacher">
+                    Teacher
+                </option>
+
+            </select>
+
+            <br><br>
+
+
+            <label>Department</label>
+            <br>
+
+            <input
+                type="text"
+                name="department"
+                required
+            >
+
+            <br><br>
+
+
+            <label>Email</label>
+            <br>
+
+            <input
+                type="email"
+                name="email"
+                required
+            >
+
+            <br><br>
+
+
+            <label>Password</label>
+            <br>
+
+            <input
+                type="password"
+                name="password"
+                required
+            >
+
+            <br><br>
+
+
+            <button type="submit">
+                Create Account
+            </button>
+
+        </form>
+
+
+        <p>
+            Already registered?
+
+            <a href="signIn.php">
+                Sign In
+            </a>
+        </p>
+
+    </div>
+
+</div>
+
+</body>
 </html>

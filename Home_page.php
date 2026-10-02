@@ -1,10 +1,56 @@
 <?php
 require __DIR__ . '/backend/common.php';
-$paper_count = $conn->query("SELECT COUNT(*) AS total FROM papers WHERE status = 'approved'")->fetch_assoc()['total'];
-$member_count = $conn->query('SELECT COUNT(*) AS total FROM users WHERE is_active = 1')->fetch_assoc()['total'];
-$project_count = $conn->query("SELECT COUNT(*) AS total FROM projects WHERE approval = 'approved' AND status <> 'Completed'")->fetch_assoc()['total'];
-$papers = $conn->query("SELECT title, authors FROM papers WHERE status = 'approved' ORDER BY id DESC LIMIT 3")->fetch_all(MYSQLI_ASSOC);
-$projects = $conn->query("SELECT id, title, department FROM projects WHERE approval = 'approved' AND status <> 'Completed' ORDER BY id DESC LIMIT 3")->fetch_all(MYSQLI_ASSOC);
+
+// Total approved papers
+$result = $conn->query(
+    "SELECT COUNT(*) AS total FROM papers WHERE status = 'approved'"
+);
+$row = $result->fetch_assoc();
+$paper_count = $row["total"];
+
+
+// Total active members
+$result = $conn->query(
+    "SELECT COUNT(*) AS total FROM users WHERE is_active = 1"
+);
+$row = $result->fetch_assoc();
+$member_count = $row["total"];
+
+
+// Total active approved projects
+$result = $conn->query(
+    "SELECT COUNT(*) AS total 
+     FROM projects 
+     WHERE approval = 'approved' 
+     AND status != 'Completed'"
+);
+$row = $result->fetch_assoc();
+$project_count = $row["total"];
+
+
+// Latest 3 papers
+$result = $conn->query(
+    "SELECT title, authors
+     FROM papers
+     WHERE status = 'approved'
+     ORDER BY id DESC
+     LIMIT 3"
+);
+
+$papers = $result->fetch_all(MYSQLI_ASSOC);
+
+
+// Latest 3 projects
+$result = $conn->query(
+    "SELECT id, title, department
+     FROM projects
+     WHERE approval = 'approved'
+     AND status != 'Completed'
+     ORDER BY id DESC
+     LIMIT 3"
+);
+
+$projects = $result->fetch_all(MYSQLI_ASSOC);
 ?>
 <!DOCTYPE html>
 <html lang="en">

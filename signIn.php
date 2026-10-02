@@ -1,33 +1,64 @@
 <?php
 require __DIR__ . '/backend/common.php';
 
-$error = '';
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    try {
-        $email = strtolower(required_text('email', 'Email'));
-        $password = is_string($_POST['password'] ?? null) ? $_POST['password'] : '';
-        $key = hash('sha256', ($_SERVER['REMOTE_ADDR'] ?? '') . '|' . $email);
-        $conn->execute_query('DELETE FROM login_attempts WHERE created_at < NOW() - INTERVAL 15 MINUTE');
-        $attempts = $conn->execute_query('SELECT COUNT(*) AS total FROM login_attempts WHERE attempt_key = ?', [$key])->fetch_assoc()['total'];
-        if ($attempts >= 5) {
-            throw new InvalidArgumentException('Too many attempts. Try again in 15 minutes.');
+$error = "";
+
+if ($_SERVER["REQUEST_METHOD"] == "POST") {
+
+    // Form থেকে data নেওয়া
+    $email = $_POST["email"];
+    $password = $_POST["password"];
+
+    // Empty check
+    if (empty($email) || empty($password)) {
+
+        $error = "Please enter email and password.";
+    } else {
+
+        // Email দিয়ে user খোঁজা
+        $stmt = $conn->prepare(
+            "SELECT * FROM users WHERE email = ?"
+        );
+
+        $stmt->bind_param("s", $email);
+        $stmt->execute();
+
+        $result = $stmt->get_result();
+
+        // User পাওয়া গেলে
+        if ($result->num_rows == 1) {
+
+            $user = $result->fetch_assoc();
+
+            // Password check
+            if (password_verify($password, $user["password"])) {
+
+                // User ID session-এ রাখা
+                $_SESSION["user_id"] = $user["id"];
+
+                // Admin হলে admin page
+                if ($user["role"] == "admin") {
+
+                    header("Location: admin_index.php");
+                    exit;
+                } else {
+
+                    // Student / Teacher
+                    header("Location: User_dashboard.php");
+                    exit;
+                }
+            } else {
+
+                $error = "Wrong password.";
+            }
+        } else {
+
+            $error = "Email not found.";
         }
-        $account = $conn->execute_query('SELECT * FROM users WHERE email = ?', [$email])->fetch_assoc();
-        if (!$account || !$account['is_active'] || !password_verify($password, $account['password'])) {
-            $conn->execute_query('INSERT INTO login_attempts (attempt_key) VALUES (?)', [$key]);
-            throw new InvalidArgumentException('Invalid email or password, or the account is disabled.');
-        }
-        $conn->execute_query('DELETE FROM login_attempts WHERE attempt_key = ?', [$key]);
-        session_regenerate_id(true);
-        $_SESSION['user_id'] = $account['id'];
-        $_SESSION['version'] = $account['session_version'];
-        go($account['role'] === 'admin' ? 'admin_index.php' : 'User_dashboard.php');
-    } catch (Throwable $exception) {
-        $error = page_error($exception);
     }
 }
-
 ?>
+
 <!DOCTYPE html>
 <html lang="en">
 
@@ -48,7 +79,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             margin-top: 20px;
         }
     </style>
-<link rel="stylesheet" href="portal.css"></head>
+    <link rel="stylesheet" href="portal.css">
+</head>
 
 <body>
     <div class="Panel" style="display: flex; width: 100%; height: 100vh;">
@@ -71,18 +103,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             <h1 style="color: #c05332; font-weight: bold;">Welcome Back!</h1>
             <p style="text-align: left;"> Sign in to your UIU Research account</p>
 
-            <!-- অন্যান্য কোড আগের মতই থাকবে, শুধু form অংশটুকু পরিবর্তন করুন -->
+
 
             <?php show_message(); ?><?php if ($error): ?><p class="notice error" role="alert"><?= e($error) ?></p><?php endif; ?>
-<form method="post" class="live-content" style="max-width:340px">
+        <form method="post" class="live-content" style="max-width:340px">
 
-<label class="field">Email<input type="email" name="email" value="<?= e(input('email')) ?>" maxlength="255" required autocomplete="email"></label>
-<label class="field">Password<input type="password" name="password" required autocomplete="current-password"></label>
-<p><a href="forgot_password.php">Forgot Password?</a></p>
-<button type="submit">Sign In</button>
-</form>
-            <p style="font-size: 14px;">No account? <a href="register.php"
-                    style="text-decoration: none; color: #e69275; font-size: 16px;">Register here</a></p>
+            <label class="field">Email<input type="email" name="email" value="<?= e(input('email')) ?>" maxlength="255" required autocomplete="email"></label>
+            <label class="field">Password<input type="password" name="password" required autocomplete="current-password"></label>
+            <p><a href="forgot_password.php">Forgot Password?</a></p>
+            <button type="submit">Sign In</button>
+        </form>
+        <p style="font-size: 14px;">No account? <a href="register.php"
+                style="text-decoration: none; color: #e69275; font-size: 16px;">Register here</a></p>
         </div>
     </div>
 
