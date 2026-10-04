@@ -1,27 +1,35 @@
 <?php
 
 require __DIR__ . '/backend/common.php';
+
 require_login();
 
 
-// Get id and type from URL
+// ==========================================
+// Get ID and Type from URL
+// ==========================================
+
 $id = $_GET['id'];
 $type = $_GET['type'];
 
 
-// -------------------------
-// Download CV
-// -------------------------
+// ==========================================
+// CV Download
+// ==========================================
 
 if ($type == 'cv') {
 
-    // Check permission
+    // User can download only own CV
+    // Admin can download any CV
     if ($id != $user['id'] && $user['role'] != 'admin') {
         exit('You cannot download this CV.');
     }
 
+
     // Find CV from database
-    $sql = "SELECT cv_path FROM users WHERE id = ?";
+    $sql = "SELECT cv_path
+            FROM users
+            WHERE id = ?";
 
     $result = $conn->execute_query(
         $sql,
@@ -30,17 +38,21 @@ if ($type == 'cv') {
 
     $record = $result->fetch_assoc();
 
+
+    // Check if CV exists in database
     if (!$record) {
         exit('CV not found.');
     }
 
-    $fileName = basename($record['cv_path']);
+
+    // Get file path
+    $filePath = $record['cv_path'];
 }
 
 
-// -------------------------
-// Download Paper
-// -------------------------
+// ==========================================
+// Paper Download
+// ==========================================
 
 else if ($type == 'paper') {
 
@@ -56,6 +68,8 @@ else if ($type == 'paper') {
 
     $record = $result->fetch_assoc();
 
+
+    // Check if paper exists
     if (!$record) {
         exit('Paper not found.');
     }
@@ -71,37 +85,48 @@ else if ($type == 'paper') {
     }
 
 
-    $fileName = basename($record['file_path']);
+    // Get file path
+    $filePath = $record['file_path'];
 }
 
 
-// -------------------------
-// Wrong type
-// -------------------------
+// ==========================================
+// Invalid Type
+// ==========================================
 
 else {
 
-    exit('Wrong file type.');
+    exit('Invalid file type.');
 }
 
 
-// -------------------------
-// Find the actual file
-// -------------------------
+// ==========================================
+// Get File Name
+// ==========================================
+
+$fileName = basename($filePath);
+
+
+// ==========================================
+// Full File Location
+// ==========================================
 
 $file = __DIR__ . '/backend/uploads/' . $fileName;
 
 
-// Check file exists
+// ==========================================
+// Check File Exists
+// ==========================================
+
 if (!file_exists($file)) {
 
     exit('File not found.');
 }
 
 
-// -------------------------
-// Download the file
-// -------------------------
+// ==========================================
+// Download File
+// ==========================================
 
 header('Content-Type: application/octet-stream');
 
@@ -111,6 +136,13 @@ header(
     '"'
 );
 
+header(
+    'Content-Length: ' .
+    filesize($file)
+);
+
+
+// Send file to browser
 readfile($file);
 
 exit;
