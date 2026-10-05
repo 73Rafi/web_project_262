@@ -1,184 +1,98 @@
 <?php
 
 require __DIR__ . '/backend/common.php';
-
 require_login();
 
-
-// ==========================================
-// SAVE / UNSAVE PAPER
-// ==========================================
-
-if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-
-    $paper_id = $_POST['paper_id'];
-    $action = $_POST['action'];
-
-
-    // Check paper exists
-    $sql = "SELECT * FROM papers
-            WHERE id = '$paper_id'
-            AND status = 'approved'";
-
-    $result = $conn->query($sql);
-
-    $paper = $result->fetch_assoc();
-
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    $paper_id = (int) input('paper_id');
+    $paper = $conn->execute_query(
+        "SELECT id FROM papers WHERE id = ? AND status = 'approved'",
+        [$paper_id]
+    )->fetch_assoc();
 
     if (!$paper) {
+        http_response_code(404);
         exit('Paper not found.');
     }
 
-
-    // Unsave paper
-    if ($action == 'unsave') {
-
-        $user_id = $user['id'];
-
-        $sql = "DELETE FROM saved_papers
-                WHERE user_id = '$user_id'
-                AND paper_id = '$paper_id'";
-
-        $conn->query($sql);
+    if (input('action') === 'unsave') {
+        $conn->execute_query(
+            'DELETE FROM saved_papers WHERE user_id = ? AND paper_id = ?',
+            [$user['id'], $paper_id]
+        );
+    } else {
+        $conn->execute_query(
+            'INSERT IGNORE INTO saved_papers (user_id, paper_id) VALUES (?, ?)',
+            [$user['id'], $paper_id]
+        );
     }
-
-
-    // Save paper
-    else {
-
-        $user_id = $user['id'];
-
-        $sql = "INSERT IGNORE INTO saved_papers
-                (user_id, paper_id)
-                VALUES ('$user_id', '$paper_id')";
-
-        $conn->query($sql);
-    }
-
 
     flash('Saved papers updated.');
-
-    go('research-exploer1.php');
+    go('research-exploer1.php?source=portal');
 }
 
+$search = is_string($_GET['q'] ?? null) ? trim($_GET['q']) : '';
+$category = is_string($_GET['category'] ?? null) ? $_GET['category'] : '';
+$department = is_string($_GET['department'] ?? null) ? $_GET['department'] : '';
+$year = (int) ($_GET['year'] ?? 0);
+$saved_only = isset($_GET['saved']);
+$term = '%' . $search . '%';
 
-
-// ==========================================
-// SEARCH VALUES
-// ==========================================
-
-$search = '';
-
-if (isset($_GET['q'])) {
-    $search = $_GET['q'];
-}
-
-
-
-$category = '';
-
-if (isset($_GET['category'])) {
-    $category = $_GET['category'];
-}
-
-
-
-$department = '';
-
-if (isset($_GET['department'])) {
-    $department = $_GET['department'];
-}
-
-
-
-$year = '';
-
-if (isset($_GET['year'])) {
-    $year = $_GET['year'];
-}
-
-
-
-// ==========================================
-// GET APPROVED PAPERS
-// ==========================================
-
-$sql = "SELECT *
-        FROM papers
-        WHERE status = 'approved'";
-
-
-
-// Search by title, author or keyword
-if ($search != '') {
-
-    $sql .= " AND (
-                title LIKE '%$search%'
-                OR authors LIKE '%$search%'
-                OR keywords LIKE '%$search%'
-              )";
-}
-
-
-
-// Filter by category
-if ($category != '') {
-
-    $sql .= " AND category = '$category'";
-}
-
-
-
-// Filter by department
-if ($department != '') {
-
-    $sql .= " AND department = '$department'";
-}
-
-
-
-// Filter by year
-if ($year != '') {
-
-    $sql .= " AND YEAR(created_at) = '$year'";
-}
-
-
-
-// Newest paper first
-$sql .= " ORDER BY id DESC";
-
-
-
-$result = $conn->query($sql);
-
-$papers = $result->fetch_all(MYSQLI_ASSOC);
-
-
-
-// ==========================================
-// GET CATEGORIES
-// ==========================================
+$papers = $conn->execute_query(
+    "SELECT p.*, s.paper_id AS saved
+     FROM papers p
+     LEFT JOIN saved_papers s ON s.paper_id = p.id AND s.user_id = ?
+     WHERE p.status = 'approved'
+       AND (p.title LIKE ? OR p.authors LIKE ? OR p.keywords LIKE ?)
+       AND (? = '' OR p.category = ?)
+       AND (? = '' OR p.department = ?)
+       AND (? = 0 OR YEAR(p.created_at) = ?)
+       AND (? = 0 OR s.paper_id IS NOT NULL)
+     ORDER BY p.id DESC
+     LIMIT 100",
+    [
+        $user['id'], $term, $term, $term,
+        $category, $category, $department, $department,
+        $year, $year, (int) $saved_only
+    ]
+)->fetch_all(MYSQLI_ASSOC);
 
 $categories = $conn->query(
-    "SELECT DISTINCT category
-     FROM papers
-     WHERE status = 'approved'
-     ORDER BY category"
+    "SELECT DISTINCT category FROM papers WHERE status = 'approved' ORDER BY category"
 );
-
-
-
-// ==========================================
-// GET DEPARTMENTS
-// ==========================================
-
 $departments = $conn->query(
-    "SELECT DISTINCT department
-     FROM papers
-     WHERE status = 'approved'
-     ORDER BY department"
+    "SELECT DISTINCT department FROM papers WHERE status = 'approved' ORDER BY department"
 );
+
+// Existing search/bookmark links should keep opening the local UIU collection.
+$local_search = isset($_GET['q'])
+    || isset($_GET['category'])
+    || isset($_GET['department'])
+    || isset($_GET['year'])
+    || $saved_only;
+$source = (($_GET['source'] ?? '') === 'portal' || $local_search) ? 'portal' : 'crossref';
+
+$online_search = is_string($_GET['online_q'] ?? null)
+    ? substr(trim($_GET['online_q']), 0, 150)
+    : '';
+$topic = is_string($_GET['topic'] ?? null) ? $_GET['topic'] : 'cs.*';
+$page = max(1, min(100, (int) ($_GET['page'] ?? 1)));
+
+if ($source === 'crossref') {
+    require __DIR__ . '/backend/crossref.php';
+    $topics = crossref_topics();
+
+    if (!isset($topics[$topic])) {
+        $topic = 'cs.*';
+    }
+
+    $online = fetch_crossref_papers($topic, $online_search, $page);
+    $page_link = 'research-exploer1.php?' . http_build_query([
+        'source' => 'crossref',
+        'online_q' => $online_search,
+        'topic' => $topic
+    ]);
+}
 
 ?>
 <!DOCTYPE html>
