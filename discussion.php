@@ -1,23 +1,114 @@
 <?php
+
 require __DIR__ . '/backend/common.php';
 require_login();
 
-$id = (int) ($_GET['id'] ?? 0);
-$discussion = $conn->execute_query('SELECT d.*, u.full_name FROM discussions d JOIN users u ON u.id = d.user_id WHERE d.id = ?', [$id])->fetch_assoc();
-if (!$discussion) { http_response_code(404); exit('Discussion not found.'); }
-$error = '';
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    try {
-        $body = required_text('body', 'Reply', 5000);
-        $conn->begin_transaction();
-        $conn->execute_query('INSERT INTO replies (discussion_id, user_id, body) VALUES (?, ?, ?)', [$id, $user['id'], $body]);
-        if ($discussion['user_id'] != $user['id']) { notify_user($discussion['user_id'], $user['full_name'] . ' replied to your discussion.'); }
-        $conn->commit();
-        flash('Reply posted.');
-        go('discussion.php?id=' . $id);
-    } catch (Throwable $exception) { $conn->rollback(); $error = page_error($exception); }
+
+// -------------------------------------
+// Get discussion ID from URL
+// -------------------------------------
+
+$id = $_GET['id'] ?? 0;
+
+
+// -------------------------------------
+// Find discussion
+// -------------------------------------
+
+$sql = "SELECT discussions.*, users.full_name
+        FROM discussions
+        JOIN users
+        ON discussions.user_id = users.id
+        WHERE discussions.id = ?";
+
+$result = $conn->execute_query($sql, [$id]);
+
+$discussion = $result->fetch_assoc();
+
+
+// Discussion not found
+if (!$discussion) {
+    exit('Discussion not found.');
 }
-$replies = $conn->execute_query('SELECT r.*, u.full_name FROM replies r JOIN users u ON u.id = r.user_id WHERE r.discussion_id = ? ORDER BY r.id', [$id])->fetch_all(MYSQLI_ASSOC);
+
+
+// -------------------------------------
+// Error message
+// -------------------------------------
+
+$error = '';
+
+
+// -------------------------------------
+// Add Reply
+// -------------------------------------
+
+if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+
+    $body = trim($_POST['body'] ?? '');
+
+
+    // Empty reply check
+    if ($body == '') {
+
+        $error = 'Please write a reply.';
+
+    }
+
+    // Maximum 5000 characters
+    else if (strlen($body) > 5000) {
+
+        $error = 'Reply is too long.';
+
+    }
+
+    else {
+
+        // Save reply in database
+        $sql = "INSERT INTO replies
+                (discussion_id, user_id, body)
+                VALUES (?, ?, ?)";
+
+        $conn->execute_query(
+            $sql,
+            [$id, $user['id'], $body]
+        );
+
+
+        // Notify discussion owner
+        if ($discussion['user_id'] != $user['id']) {
+
+            $message = $user['full_name']
+                     . ' replied to your discussion.';
+
+            notify_user(
+                $discussion['user_id'],
+                $message
+            );
+        }
+
+
+        flash('Reply posted.');
+
+        go('discussion.php?id=' . $id);
+    }
+}
+
+
+// -------------------------------------
+// Get All Replies
+// -------------------------------------
+
+$sql = "SELECT replies.*, users.full_name
+        FROM replies
+        JOIN users
+        ON replies.user_id = users.id
+        WHERE replies.discussion_id = ?
+        ORDER BY replies.id";
+
+$result = $conn->execute_query($sql, [$id]);
+
+$replies = $result->fetch_all(MYSQLI_ASSOC);
 
 ?>
 <!DOCTYPE html>

@@ -1,23 +1,116 @@
 <?php
+
 require __DIR__ . '/backend/common.php';
 require_login();
-$filter = '';
 
-$categories = ['General Discussion', 'Research Methods', 'Career & Funding', 'Paper Reviews', 'Tools & Software'];
+
+// -------------------------------------
+// Categories
+// -------------------------------------
+
+$categories = [
+    'General Discussion',
+    'Research Methods',
+    'Career & Funding',
+    'Paper Reviews',
+    'Tools & Software'
+];
+
 $error = '';
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    try {
-        $title = required_text('title', 'Title');
-        $category = input('category');
-        $description = required_text('description', 'Description', 10000);
-        if (!in_array($category, $categories, true)) { throw new InvalidArgumentException('Choose a category.'); }
-        $conn->execute_query('INSERT INTO discussions (user_id, title, category, description) VALUES (?, ?, ?, ?)', [$user['id'], $title, $category, $description]);
+
+
+// -------------------------------------
+// Create New Discussion
+// -------------------------------------
+
+if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+
+    // Get data from form
+    $title = trim($_POST['title'] ?? '');
+    $category = $_POST['category'] ?? '';
+    $description = trim($_POST['description'] ?? '');
+
+
+    // Check title
+    if ($title == '') {
+
+        $error = 'Please enter a title.';
+    }
+
+    // Check category
+    else if (!in_array($category, $categories)) {
+
+        $error = 'Please choose a category.';
+    }
+
+    // Check description
+    else if ($description == '') {
+
+        $error = 'Please enter a description.';
+    }
+
+    // Check description length
+    else if (strlen($description) > 10000) {
+
+        $error = 'Description is too long.';
+    }
+
+    // Everything is correct
+    else {
+
+        $sql = "INSERT INTO discussions
+                (user_id, title, category, description)
+                VALUES (?, ?, ?, ?)";
+
+        $conn->execute_query(
+            $sql,
+            [
+                $user['id'],
+                $title,
+                $category,
+                $description
+            ]
+        );
+
+
+        // Get newly created discussion ID
         $id = $conn->insert_id;
+
+
         flash('Discussion posted.');
+
+
+        // Go to discussion details page
         go('discussion.php?id=' . $id);
-    } catch (Throwable $exception) { $error = page_error($exception); }
+    }
 }
-$discussions = $conn->execute_query('SELECT d.*, u.full_name, (SELECT COUNT(*) FROM replies r WHERE r.discussion_id = d.id) AS reply_count FROM discussions d JOIN users u ON u.id = d.user_id WHERE (? = \'\' OR d.category = ?) ORDER BY d.id DESC LIMIT 100', [$filter, $filter])->fetch_all(MYSQLI_ASSOC);
+
+
+// -------------------------------------
+// Get All Discussions
+// -------------------------------------
+
+$sql = "SELECT discussions.*,
+               users.full_name,
+
+               (SELECT COUNT(*)
+                FROM replies
+                WHERE replies.discussion_id = discussions.id)
+                AS reply_count
+
+        FROM discussions
+
+        JOIN users
+        ON discussions.user_id = users.id
+
+        ORDER BY discussions.id DESC
+
+        LIMIT 100";
+
+
+$result = $conn->query($sql);
+
+$discussions = $result->fetch_all(MYSQLI_ASSOC);
 
 ?>
 <!DOCTYPE html>
