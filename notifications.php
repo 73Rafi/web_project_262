@@ -5,7 +5,7 @@ require_login();
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
   $conn->execute_query('UPDATE notifications SET is_read = 1 WHERE user_id = ?', [$user['id']]);
   flash('All notifications marked as read.');
-  go('notification.php');
+  go('notifications.php');
 }
 $notifications = $conn->execute_query('SELECT * FROM notifications WHERE user_id = ? ORDER BY id DESC LIMIT 100', [$user['id']])->fetch_all(MYSQLI_ASSOC);
 $unread = $conn->execute_query('SELECT COUNT(*) AS total FROM notifications WHERE user_id = ? AND is_read = 0', [$user['id']])->fetch_assoc()['total'];

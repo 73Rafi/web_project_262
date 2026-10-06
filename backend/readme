@@ -17,7 +17,7 @@ php backend/create_admin.php
 PHP command na pele XAMPP path diye PowerShell e run koro:
 & "C:\xampp\php\php.exe" backend/create_admin.php
 
-Name, email, password ar confirm password dao. Tarpor signIn.php diye login koro.
+Name, email, password ar confirm password dao. Tarpor sign-in.php diye login koro.
 Terminal e password type korar somoy dekha jabe. Database e hash save hobe.
 Admin dashboard e login kora thakle "Add New Admin" form use korte paro.
 
@@ -29,8 +29,8 @@ Live Server diye PHP cholbe na. npm/node lagbe na.
 Full instructions ar file explanation: project root er README.md.
 
 Code porar order:
-config.php -> db.php -> common.php -> register.php -> signIn.php
-Tarpor upload.php, Project.php, Community_Forum.php ar admin_index.php.
+config.php -> db.php -> common.php -> register.php -> sign-in.php
+Tarpor submit-paper.php, research-projects.php, community-forum.php ar admin-dashboard.php.
 Main PHP pages project root e ache; helper/database files backend e ache.
 
 Research Explorer er "CSE Papers (Crossref)" option free API theke CSE paper ane.

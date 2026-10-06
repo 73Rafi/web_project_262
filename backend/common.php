@@ -17,7 +17,7 @@ require __DIR__ . '/db.php';
 // ==========================================
 function e($text)
 {
-    return htmlspecialchars((string)$text);
+    return htmlspecialchars((string)$text, ENT_QUOTES, 'UTF-8');
 }
 
 
@@ -147,7 +147,7 @@ function require_login()
 
         flash('Please login first.');
 
-        go('signIn.php');
+        go('sign-in.php');
     }
 }
 

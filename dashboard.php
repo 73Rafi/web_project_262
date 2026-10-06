@@ -406,7 +406,7 @@ $recent = $conn->query(
         <div class="quick-actions">
 
 
-            <a href="upload.php" class="quick-card">
+            <a href="submit-paper.php" class="quick-card">
 
                 <i class="fa-solid fa-upload"></i>
 
@@ -415,7 +415,7 @@ $recent = $conn->query(
             </a>
 
 
-            <a href="research-exploer1.php" class="quick-card">
+            <a href="research-explorer.php" class="quick-card">
 
                 <i class="fa-solid fa-magnifying-glass"></i>
 
@@ -424,7 +424,7 @@ $recent = $conn->query(
             </a>
 
 
-            <a href="Community_Forum.php" class="quick-card">
+            <a href="community-forum.php" class="quick-card">
 
                 <i class="fa-solid fa-comments"></i>
 
@@ -433,7 +433,7 @@ $recent = $conn->query(
             </a>
 
 
-            <a href="Project.php" class="quick-card">
+            <a href="research-projects.php" class="quick-card">
 
                 <i class="fa-solid fa-diagram-project"></i>
 

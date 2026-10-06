@@ -1,6 +1,5 @@
-/backend/config.local.php
-/backend/cache/
-/backend/uploads/*
-!/backend/uploads/.gitkeep
-/backend/node_modules/
-/.test-output/
+# Local agent credentials and generated runtime data
+.continue/agents/OpenRouter.yaml
+backend/cache/
+backend/uploads/*.pdf
+!backend/uploads/.gitkeep

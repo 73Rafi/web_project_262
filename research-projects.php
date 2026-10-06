@@ -14,7 +14,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $conn->execute_query('INSERT INTO projects (user_id, title, description, department, status) VALUES (?, ?, ?, ?, ?)', [$user['id'], $title, $description, $user['department'], $status]);
         flash('Project submitted for admin review. You can see it in My Profile.');
         go('profile.php');
-    } catch (Throwable $exception) { $error = page_error($exception); }
+    } catch (Throwable $exception) {
+        $error = page_error($exception);
+    }
 }
 $status = is_string($_GET['status'] ?? null) ? $_GET['status'] : '';
 $projects = $conn->execute_query("SELECT p.*, u.full_name FROM projects p JOIN users u ON u.id = p.user_id WHERE p.approval = 'approved' AND (? = '' OR p.status = ?) ORDER BY p.id DESC LIMIT 100", [$status, $status])->fetch_all(MYSQLI_ASSOC);
@@ -22,6 +24,7 @@ $projects = $conn->execute_query("SELECT p.*, u.full_name FROM projects p JOIN u
 ?>
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -146,6 +149,7 @@ $projects = $conn->execute_query("SELECT p.*, u.full_name FROM projects p JOIN u
             font-style: normal;
             font-variation-settings: "wdth" 100;
         }
+
         .nav_a_color {
             color: #4b5563;
             font-size: 14px;
@@ -466,11 +470,11 @@ $projects = $conn->execute_query("SELECT p.*, u.full_name FROM projects p JOIN u
                 padding: 12px 15px;
             }
 
-            nav > div:last-child {
+            nav>div:last-child {
                 gap: 8px !important;
             }
 
-            nav > div:last-child > a:not(:first-child) {
+            nav>div:last-child>a:not(:first-child) {
                 display: none;
             }
 
@@ -485,8 +489,8 @@ $projects = $conn->execute_query("SELECT p.*, u.full_name FROM projects p JOIN u
             }
 
             .side-link span,
-            .profile > div:last-child,
-            .profile + a {
+            .profile>div:last-child,
+            .profile+a {
                 display: none;
             }
 
@@ -507,57 +511,223 @@ $projects = $conn->execute_query("SELECT p.*, u.full_name FROM projects p JOIN u
                 grid-template-columns: 1fr;
             }
         }
-        .project-main { max-width: 1080px; padding: 30px 34px 38px; }
-        .page-heading { margin-bottom: 22px; }
-        .page-heading h1 { font-size: 28px; }
-        .page-heading p { font-size: 15px; }
-        .create-button { padding: 10px 17px; font-size: 13px; }
-        .filters { gap: 10px; margin-bottom: 20px; }
-        .filter-button { padding: 8px 16px; font-size: 12px; }
-        .project-grid { gap: 18px; }
-        .project-card { min-height: 235px; padding: 18px; }
-        .project-card-header { gap: 12px; }
-        .project-icon { width: 32px; height: 32px; font-size: 12px; }
-        .project-title { font-size: 14px; }
-        .project-lead { margin-top: 4px; font-size: 11px; }
-        .status { padding: 4px 9px; font-size: 11px; }
-        .project-description { min-height: 51px; margin: 16px 0 10px; font-size: 12px; }
-        .tag { padding: 4px 9px; font-size: 11px; }
-        .project-info { gap: 16px; font-size: 11px; }
-        .progress-track { height: 6px; margin: 11px 0; }
-        .details-button { padding: 7px 11px; font-size: 11px; }
-        .share-button { font-size: 12px; }
 
-        @media (max-width: 760px) {
-            .project-main { padding: 22px 16px 30px; }
-            .page-heading h1 { font-size: 23px; }
-            .project-grid { grid-template-columns: 1fr; }
+        .project-main {
+            max-width: 1080px;
+            padding: 30px 34px 38px;
         }
-        .project-main { max-width: 1160px; padding: 38px 44px 46px; }
-        .page-heading { margin-bottom: 28px; }
-        .page-heading h1 { font-size: 34px; }
-        .page-heading p { font-size: 17px; }
-        .create-button { padding: 12px 20px; font-size: 15px; }
-        .filters { gap: 12px; margin-bottom: 25px; }
-        .filter-button { padding: 10px 19px; font-size: 14px; }
-        .project-grid { gap: 22px; }
-        .project-card { min-height: 280px; padding: 23px; }
-        .project-card-header { gap: 15px; }
-        .project-icon { width: 38px; height: 38px; font-size: 14px; }
-        .project-title { font-size: 16px; }
-        .project-lead { margin-top: 5px; font-size: 13px; }
-        .status { padding: 5px 11px; font-size: 13px; }
-        .project-description { min-height: 59px; margin: 20px 0 13px; font-size: 14px; }
-        .tag { padding: 5px 11px; font-size: 13px; }
-        .project-info { gap: 19px; font-size: 13px; }
-        .progress-track { height: 7px; margin: 14px 0; }
-        .details-button { padding: 9px 13px; font-size: 13px; }
-        .share-button { font-size: 14px; }
+
+        .page-heading {
+            margin-bottom: 22px;
+        }
+
+        .page-heading h1 {
+            font-size: 28px;
+        }
+
+        .page-heading p {
+            font-size: 15px;
+        }
+
+        .create-button {
+            padding: 10px 17px;
+            font-size: 13px;
+        }
+
+        .filters {
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .filter-button {
+            padding: 8px 16px;
+            font-size: 12px;
+        }
+
+        .project-grid {
+            gap: 18px;
+        }
+
+        .project-card {
+            min-height: 235px;
+            padding: 18px;
+        }
+
+        .project-card-header {
+            gap: 12px;
+        }
+
+        .project-icon {
+            width: 32px;
+            height: 32px;
+            font-size: 12px;
+        }
+
+        .project-title {
+            font-size: 14px;
+        }
+
+        .project-lead {
+            margin-top: 4px;
+            font-size: 11px;
+        }
+
+        .status {
+            padding: 4px 9px;
+            font-size: 11px;
+        }
+
+        .project-description {
+            min-height: 51px;
+            margin: 16px 0 10px;
+            font-size: 12px;
+        }
+
+        .tag {
+            padding: 4px 9px;
+            font-size: 11px;
+        }
+
+        .project-info {
+            gap: 16px;
+            font-size: 11px;
+        }
+
+        .progress-track {
+            height: 6px;
+            margin: 11px 0;
+        }
+
+        .details-button {
+            padding: 7px 11px;
+            font-size: 11px;
+        }
+
+        .share-button {
+            font-size: 12px;
+        }
 
         @media (max-width: 760px) {
-            .project-main { padding: 26px 18px 34px; }
-            .page-heading h1 { font-size: 27px; }
-            .project-grid { grid-template-columns: 1fr; }
+            .project-main {
+                padding: 22px 16px 30px;
+            }
+
+            .page-heading h1 {
+                font-size: 23px;
+            }
+
+            .project-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .project-main {
+            max-width: 1160px;
+            padding: 38px 44px 46px;
+        }
+
+        .page-heading {
+            margin-bottom: 28px;
+        }
+
+        .page-heading h1 {
+            font-size: 34px;
+        }
+
+        .page-heading p {
+            font-size: 17px;
+        }
+
+        .create-button {
+            padding: 12px 20px;
+            font-size: 15px;
+        }
+
+        .filters {
+            gap: 12px;
+            margin-bottom: 25px;
+        }
+
+        .filter-button {
+            padding: 10px 19px;
+            font-size: 14px;
+        }
+
+        .project-grid {
+            gap: 22px;
+        }
+
+        .project-card {
+            min-height: 280px;
+            padding: 23px;
+        }
+
+        .project-card-header {
+            gap: 15px;
+        }
+
+        .project-icon {
+            width: 38px;
+            height: 38px;
+            font-size: 14px;
+        }
+
+        .project-title {
+            font-size: 16px;
+        }
+
+        .project-lead {
+            margin-top: 5px;
+            font-size: 13px;
+        }
+
+        .status {
+            padding: 5px 11px;
+            font-size: 13px;
+        }
+
+        .project-description {
+            min-height: 59px;
+            margin: 20px 0 13px;
+            font-size: 14px;
+        }
+
+        .tag {
+            padding: 5px 11px;
+            font-size: 13px;
+        }
+
+        .project-info {
+            gap: 19px;
+            font-size: 13px;
+        }
+
+        .progress-track {
+            height: 7px;
+            margin: 14px 0;
+        }
+
+        .details-button {
+            padding: 9px 13px;
+            font-size: 13px;
+        }
+
+        .share-button {
+            font-size: 14px;
+        }
+
+        @media (max-width: 760px) {
+            .project-main {
+                padding: 26px 18px 34px;
+            }
+
+            .page-heading h1 {
+                font-size: 27px;
+            }
+
+            .project-grid {
+                grid-template-columns: 1fr;
+            }
         }
 
         .modal-overlay {
@@ -571,7 +741,9 @@ $projects = $conn->execute_query("SELECT p.*, u.full_name FROM projects p JOIN u
             background: rgba(24, 35, 61, .45);
         }
 
-        .modal-overlay.open { display: flex; }
+        .modal-overlay.open {
+            display: flex;
+        }
 
         .project-modal {
             width: min(100%, 520px);
@@ -588,37 +760,99 @@ $projects = $conn->execute_query("SELECT p.*, u.full_name FROM projects p JOIN u
             margin-bottom: 18px;
         }
 
-        .modal-header h2 { margin: 0; font-size: 22px; }
-        .modal-close { border: 0; background: transparent; color: #64748b; font-size: 22px; cursor: pointer; }
-        .project-form label { display: block; margin: 12px 0 6px; font-weight: 600; }
-        .project-form input, .project-form textarea, .project-form select {
-            width: 100%; padding: 10px; border: 1px solid #d6deeb; border-radius: 7px; font: inherit;
+        .modal-header h2 {
+            margin: 0;
+            font-size: 22px;
         }
-        .project-form textarea { min-height: 90px; resize: vertical; }
-        .form-actions { display: flex; justify-content: flex-end; gap: 10px; margin-top: 20px; }
-        .form-actions button { padding: 10px 16px; border: 0; border-radius: 7px; cursor: pointer; font: inherit; }
-        .form-cancel { background: #eef2f7; color: #334155; }
-        .form-submit { background: #155eef; color: #fff; }
+
+        .modal-close {
+            border: 0;
+            background: transparent;
+            color: #64748b;
+            font-size: 22px;
+            cursor: pointer;
+        }
+
+        .project-form label {
+            display: block;
+            margin: 12px 0 6px;
+            font-weight: 600;
+        }
+
+        .project-form input,
+        .project-form textarea,
+        .project-form select {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #d6deeb;
+            border-radius: 7px;
+            font: inherit;
+        }
+
+        .project-form textarea {
+            min-height: 90px;
+            resize: vertical;
+        }
+
+        .form-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .form-actions button {
+            padding: 10px 16px;
+            border: 0;
+            border-radius: 7px;
+            cursor: pointer;
+            font: inherit;
+        }
+
+        .form-cancel {
+            background: #eef2f7;
+            color: #334155;
+        }
+
+        .form-submit {
+            background: #155eef;
+            color: #fff;
+        }
     </style>
-<link rel="stylesheet" href="portal.css"></head>
+    <link rel="stylesheet" href="portal.css">
+</head>
+
 <body class="open-sans portal-page">
     <div class="page-layout portal-layout">
         <?php require __DIR__ . '/backend/sidebar.php'; ?>
 
-        <main class="project-main"><div class="live-content">
-<?php show_message(); ?>
+        <main class="project-main">
+            <div class="live-content">
+                <?php show_message(); ?>
 
-<h1>Research Projects</h1><p>Find collaboration opportunities and share your project.</p>
-<?php if ($error): ?><p class="notice error"><?= e($error) ?></p><?php endif; ?>
-<details class="box" <?= $error ? 'open' : '' ?>><summary>Create Project</summary><form method="post">
-<label class="field">Project name<input name="title" maxlength="255" required value="<?= e(input('title')) ?>"></label>
-<label class="field">Description<textarea name="description" maxlength="10000" required><?= e(input('description')) ?></textarea></label>
-<label class="field">Status<select name="status"><?php foreach (['Recruiting', 'Active', 'Completed'] as $option): ?><option <?= input('status') === $option ? 'selected' : '' ?>><?= $option ?></option><?php endforeach; ?></select></label>
-<button>Submit for Review</button></form></details>
-<div class="box row"><a href="Project.php">All</a><?php foreach (['Active', 'Recruiting', 'Completed'] as $option): ?><a href="Project.php?status=<?= $option ?>"><?= $option ?></a><?php endforeach; ?></div>
-<?php if (!$projects): ?><p class="box empty">No published projects in this category yet.</p><?php endif; ?>
-<div class="grid"><?php foreach ($projects as $project): ?><article class="box"><span class="tag"><?= e($project['status']) ?></span><h2><?= e($project['title']) ?></h2><p class="muted">Led by <?= e($project['full_name']) ?> · <?= e($project['department']) ?></p><p><?= nl2br(e($project['description'])) ?></p><a class="button" href="project_details.php?id=<?= $project['id'] ?>">View Details</a></article><?php endforeach; ?></div>
-</div></main>
+                <h1>Research Projects</h1>
+                <p>Find collaboration opportunities and share your project.</p>
+                <?php if ($error): ?><p class="notice error"><?= e($error) ?></p><?php endif; ?>
+                <details class="box" <?= $error ? 'open' : '' ?>>
+                    <summary>Create Project</summary>
+                    <form method="post">
+                        <label class="field">Project name<input name="title" maxlength="255" required value="<?= e(input('title')) ?>"></label>
+                        <label class="field">Description<textarea name="description" maxlength="10000" required><?= e(input('description')) ?></textarea></label>
+                        <label class="field">Status<select name="status"><?php foreach (['Recruiting', 'Active', 'Completed'] as $option): ?><option <?= input('status') === $option ? 'selected' : '' ?>><?= $option ?></option><?php endforeach; ?></select></label>
+                        <button>Submit for Review</button>
+                    </form>
+                </details>
+                <div class="box row"><a href="research-projects.php">All</a><?php foreach (['Active', 'Recruiting', 'Completed'] as $option): ?><a href="research-projects.php?status=<?= $option ?>"><?= $option ?></a><?php endforeach; ?></div>
+                <?php if (!$projects): ?><p class="box empty">No published projects in this category yet.</p><?php endif; ?>
+                <div class="grid"><?php foreach ($projects as $project): ?><article class="box"><span class="tag"><?= e($project['status']) ?></span>
+                            <h2><?= e($project['title']) ?></h2>
+                            <p class="muted">Led by <?= e($project['full_name']) ?> · <?= e($project['department']) ?></p>
+                            <p><?= nl2br(e($project['description'])) ?></p><a class="button" href="project-details.php?id=<?= $project['id'] ?>">View Details</a>
+                        </article><?php endforeach; ?></div>
+            </div>
+        </main>
     </div>
 
-</body></html>
+</body>
+
+</html>

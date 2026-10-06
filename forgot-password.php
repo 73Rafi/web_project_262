@@ -11,7 +11,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $conn->execute_query('INSERT INTO password_resets (user_id) VALUES (?) ON DUPLICATE KEY UPDATE requested_at = CURRENT_TIMESTAMP', [$account['id']]);
         }
         flash('If this email has an active account, a reset request is now with the administrator. Contact your portal admin to verify your identity and receive a reset link.');
-        go('forgot_password.php');
+        go('forgot-password.php');
     } catch (Throwable $exception) { $error = page_error($exception); }
 }
 
@@ -40,7 +40,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <p>Request a reset link from your portal administrator. You will need to verify your identity; no automatic email is sent.</p>
     <?php show_message(); ?><?php if ($error): ?><p class="notice error" role="alert"><?= e($error) ?></p><?php endif; ?>
 <form method="post"><label for="email">Account email</label><input type="email" name="email" id="email" maxlength="255" required><button>Request Password Reset</button></form>
-    <a href="signIn.php">Back to Sign In</a>
+    <a href="sign-in.php">Back to Sign In</a>
   </main>
 </body>
 </html>

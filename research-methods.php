@@ -1,7 +1,7 @@
 <?php
 require __DIR__ . '/backend/common.php';
 require_login();
-$filter = 'General Discussion';
+$filter = 'Research Methods';
 
 $categories = ['General Discussion', 'Research Methods', 'Career & Funding', 'Paper Reviews', 'Tools & Software'];
 $error = '';
@@ -30,7 +30,7 @@ $discussions = $conn->execute_query('SELECT d.*, u.full_name, (SELECT COUNT(*) F
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>UIU Research Portal - General Discussion</title>
+    <title>UIU Research Portal - Research Methods</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -292,7 +292,7 @@ $discussions = $conn->execute_query('SELECT d.*, u.full_name, (SELECT COUNT(*) F
 
                     <h1><?= e($filter ?: 'Community Forum') ?></h1>
                     <p>Ask questions and connect with researchers.</p>
-                    <div class="box row"><a href="Community_Forum.php">All</a><a href="general_discussion.php">General Discussion</a><a href="research_methods.php">Research Methods</a><a href="career_funding.php">Career &amp; Funding</a><a href="paper_reviews.php">Paper Reviews</a><a href="tools_software.php">Tools &amp; Software</a></div>
+                    <div class="box row"><a href="community-forum.php">All</a><a href="general-discussion.php">General Discussion</a><a href="research-methods.php">Research Methods</a><a href="funding-opportunities.php">Career &amp; Funding</a><a href="paper-reviews.php">Paper Reviews</a><a href="research-tools.php">Tools &amp; Software</a></div>
                     <?php if ($error): ?><p class="notice error"><?= e($error) ?></p><?php endif; ?>
                     <details class="box" <?= $error ? 'open' : '' ?>>
                         <summary>New Discussion</summary>

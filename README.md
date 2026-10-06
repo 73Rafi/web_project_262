@@ -8,7 +8,7 @@ Node.js, npm or JavaScript build step is required.
 1. Use PHP **8.2 or newer** with `mysqli` and `fileinfo` enabled.
 2. Copy this folder into `C:/xampp/htdocs/web_project_262`.
 3. Start **Apache** and **MySQL** in the XAMPP Control Panel.
-4. Open `http://localhost/phpmyadmin` and import `backend/database.sql`.
+4. Open `http://localhost/phpmyadmin` and import `backend/database.sql`. A fresh import includes a small starter catalogue of papers, projects, discussions and resources, so the portal is useful from the first visit.
 5. Check `backend/config.php`: database `research_portal`, user `root`, empty
    password, host `127.0.0.1`, port `3306`. Change these if needed.
 6. Open `http://localhost/web_project_262/` in the browser.
@@ -58,11 +58,11 @@ If PHP is not on PATH, use XAMPP's PHP executable:
 
 Enter the new admin's name, email and password, then confirm the password. The
 terminal displays characters while typing. The script saves a password hash and
-does not require a CV. Sign in through `signIn.php` to open the Admin Panel.
+does not require a CV. Sign in through `sign-in.php` to open the Admin Panel.
 This setup script works only in the terminal, not through a public browser URL.
 
-Already signed in as an admin? Open **Admin Panel → Add New Admin**. Fill in the
-new account details and confirm using your own current password.
+Already signed in as an admin? Open **Admin Accounts** in the administration
+sidebar. Fill in the new account details and confirm using your own current password.
 
 Alternatively, to promote an **existing registered user**, run this in phpMyAdmin
 with that user's actual email (`your-email@example.com` is only a placeholder):
@@ -78,16 +78,19 @@ Public registration can create only Student or Teacher accounts.
 ## Working features
 
 - Registration, hashed passwords, login sessions and POST logout.
+- A responsive Research Hub design system shared across the landing page, authentication, dashboard, catalogue, projects, forum and administration views.
+- Starter catalogue records for a non-empty first-run experience. The editorial seed account is not an admin account and is not intended for sign-in.
 - Dashboard counts and homepage research loaded from the database.
 - PDF uploads, drafts, submission, admin review and paper downloads.
 - Research search by title/author/keyword, category, department and year.
 - Free Crossref integration for CSE papers, topic/keyword search, abstracts, PDF links
   and next/previous pages in Research Explorer.
 - Save/unsave papers and view your own submissions.
-- Create projects, join/leave recruiting projects and update owner status.
+- Create projects, submit join requests to recruiting projects, review applicants as a project lead, and update owner status. Approved requests become memberships; nobody joins automatically.
 - Forum categories, new discussions and replies.
 - Profile/bio editing, password changes and notifications with mark-all-read.
 - Admin-assisted password reset with expiring, single-use links.
+- Clear review states in My Profile for paper submissions, projects, outgoing join requests, and incoming join requests to projects you lead.
 
 Reset flow: user requests a reset; admin verifies identity outside the portal;
 admin creates a 30-minute link and privately shares it with the account owner;
@@ -127,14 +130,14 @@ No database re-import is needed for this integration.
 | `backend/common.php` | Small session, form, escaping and upload helpers |
 | `backend/sidebar.php` | Shared sidebar, active menu links and account/sign-out section |
 | `backend/database.sql` | Tables and relationships |
-| `register.php`, `signIn.php`, `logout.php` | Account access |
-| `upload.php`, `research-exploer1.php`, `download.php` | Papers |
+| `register.php`, `sign-in.php`, `logout.php` | Account access |
+| `submit-paper.php`, `research-explorer.php`, `download.php` | Papers |
 | `backend/crossref.php` | Free CSE paper search and file cache |
-| `Project.php`, `project_details.php` | Projects |
-| `Community_Forum.php`, category pages, `discussion.php` | Forum |
-| `profile.php`, `setting.php`, `notification.php` | Account pages |
-| `admin_index.php` | Review and account management |
-| `forgot_password.php`, `reset_password.php` | Password recovery |
+| `research-projects.php`, `project-details.php` | Projects |
+| `community-forum.php`, category pages, `discussion.php` | Forum |
+| `profile.php`, `settings.php`, `notifications.php` | Account pages |
+| `admin-dashboard.php`, `admin-*.php` | Separate administration queues for papers, projects, joins, users, resets, and admin accounts |
+| `forgot-password.php`, `reset-password.php` | Password recovery |
 | `portal.css` | Forms/content within existing layouts |
 | `tests/smoke.py` | HTTP checks for a disposable test database |
 

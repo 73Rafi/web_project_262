@@ -1,415 +1,45 @@
 <?php
-
 require __DIR__ . '/backend/common.php';
 require_login();
 
-
-// -----------------------------------------
-// Get user's papers
-// -----------------------------------------
-
-$sqlPapers = "SELECT * FROM papers
-              WHERE user_id = ?
-              ORDER BY id DESC";
-
-$resultPapers = $conn->execute_query(
-    $sqlPapers,
-    [$user['id']]
-);
-
-$papers = $resultPapers->fetch_all(MYSQLI_ASSOC);
-
-
-// -----------------------------------------
-// Get user's projects
-// -----------------------------------------
-
-$sqlProjects = "SELECT * FROM projects
-                WHERE user_id = ?
-                ORDER BY id DESC";
-
-$resultProjects = $conn->execute_query(
-    $sqlProjects,
-    [$user['id']]
-);
-
-$projects = $resultProjects->fetch_all(MYSQLI_ASSOC);
-
-
-// -----------------------------------------
-// Submit draft/rejected paper for review
-// -----------------------------------------
-
-if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-
-    $paper_id = (int) input('paper_id');
-
-    $sql = "UPDATE papers
-            SET status = 'pending'
-            WHERE id = ?
-            AND user_id = ?
-            AND (status = 'draft' OR status = 'rejected')";
-
-    $conn->execute_query(
-        $sql,
-        [
-            $paper_id,
-            $user['id']
-        ]
-    );
-
-
-    // Check if paper was updated
-    if ($conn->affected_rows > 0) {
-
-        flash('Paper submitted for review.');
-
-    } else {
-
-        flash('Paper could not be submitted.');
+$error = '';
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && input('action') === 'submit_paper') {
+    try {
+        $paper_id = (int) input('paper_id');
+        $conn->execute_query("UPDATE papers SET status = 'pending' WHERE id = ? AND user_id = ? AND status IN ('draft', 'rejected')", [$paper_id, $user['id']]);
+        if (!$conn->affected_rows) {
+            throw new InvalidArgumentException('That paper cannot be submitted for review.');
+        }
+        flash('Paper submitted for editorial review.');
+        go('profile.php');
+    } catch (Throwable $exception) {
+        $error = page_error($exception);
     }
-
-
-    go('profile.php');
 }
 
+$papers = $conn->execute_query('SELECT id, title, abstract, category, status, created_at, file_path FROM papers WHERE user_id = ? ORDER BY created_at DESC', [$user['id']])->fetch_all(MYSQLI_ASSOC);
+$projects = $conn->execute_query('SELECT id, title, department, status, approval, created_at FROM projects WHERE user_id = ? ORDER BY created_at DESC', [$user['id']])->fetch_all(MYSQLI_ASSOC);
+$requests = $conn->execute_query('SELECT r.status, r.created_at, r.updated_at, p.id AS project_id, p.title, p.department FROM project_join_requests r JOIN projects p ON p.id = r.project_id WHERE r.user_id = ? ORDER BY r.updated_at DESC', [$user['id']])->fetch_all(MYSQLI_ASSOC);
+$incoming_count = (int) ($conn->execute_query("SELECT COUNT(*) AS total FROM project_join_requests r JOIN projects p ON p.id = r.project_id WHERE p.user_id = ? AND r.status = 'pending'", [$user['id']])->fetch_assoc()['total'] ?? 0);
+$paper_counts = ['approved' => 0, 'pending' => 0, 'draft' => 0, 'rejected' => 0];
+foreach ($papers as $paper) { $paper_counts[$paper['status']] = ($paper_counts[$paper['status']] ?? 0) + 1; }
 ?>
-
-
-<!DOCTYPE html>
-<html lang="en">
-
-<head>
-
-    <meta charset="UTF-8">
-
-    <meta
-        name="viewport"
-        content="width=device-width, initial-scale=1.0"
-    >
-
-    <title>UIU Research Portal - My Profile</title>
-
-
-    <link
-        rel="stylesheet"
-        href="mystyle.css"
-    >
-
-    <link
-        rel="stylesheet"
-        href="portal.css"
-    >
-
-    <link
-        rel="stylesheet"
-        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
-    >
-
-</head>
-
-
-<body class="portal-page">
-
-
-<div class="app-container portal-layout">
-
-
-    <!-- Sidebar -->
-
-    <?php
-    require __DIR__ . '/backend/sidebar.php';
-    ?>
-
-
-    <main class="main-content">
-
-
-        <div class="live-content">
-
-
-            <!-- Show success/error message -->
-
-            <?php
-            show_message();
-            ?>
-
-
-            <h1>My Profile</h1>
-
-
-            <!-- Profile Information -->
-
-            <section class="box">
-
-
-                <h2>
-                    <?php
-                    echo e($user['full_name']);
-                    ?>
-                </h2>
-
-
-                <p>
-
-                    <?php
-                    echo e(ucfirst($user['role']));
-                    ?>
-
-                    ·
-
-                    <?php
-                    echo e($user['department']);
-                    ?>
-
-                </p>
-
-
-                <p>
-
-                    <?php
-                    echo e($user['email']);
-                    ?>
-
-                </p>
-
-
-                <p>
-
-                    <?php
-
-                    if ($user['bio'] != '') {
-
-                        echo nl2br(e($user['bio']));
-
-                    } else {
-
-                        echo 'Add your research interests in Settings.';
-                    }
-
-                    ?>
-
-                </p>
-
-
-                <a
-                    class="button"
-                    href="setting.php"
-                >
-                    Edit Profile
-                </a>
-
-
-                <!-- CV Download -->
-
-                <?php
-
-                if ($user['cv_path'] != '') {
-
-                ?>
-
-                    <a
-                        class="button secondary"
-                        href="download.php?type=cv&id=<?php echo $user['id']; ?>"
-                    >
-                        Download My CV
-                    </a>
-
-                <?php
-
-                }
-
-                ?>
-
-
-            </section>
-
-
-
-            <!-- My Papers -->
-
-            <h2>
-
-                My Papers
-
-                (<?php echo count($papers); ?>)
-
-            </h2>
-
-
-            <?php
-
-            if (empty($papers)) {
-
-            ?>
-
-                <p class="box empty">
-
-                    You have not uploaded any papers yet.
-
-                </p>
-
-            <?php
-
-            }
-
-            ?>
-
-
-
-            <?php
-
-            foreach ($papers as $paper) {
-
-            ?>
-
-
-                <article class="box">
-
-
-                    <h3>
-
-                        <?php
-                        echo e($paper['title']);
-                        ?>
-
-                    </h3>
-
-
-                    <p>
-
-                        <span class="tag">
-
-                            <?php
-                            echo e(ucfirst($paper['status']));
-                            ?>
-
-                        </span>
-
-                    </p>
-
-
-                    <!-- Download Paper -->
-
-                    <a href="download.php?type=paper&id=<?php echo $paper['id']; ?>">
-
-                        Download PDF
-
-                    </a>
-
-
-
-                    <!-- Submit Draft or Rejected Paper -->
-
-                    <?php
-
-                    if (
-                        $paper['status'] == 'draft' ||
-                        $paper['status'] == 'rejected'
-                    ) {
-
-                    ?>
-
-
-                        <form
-                            class="inline"
-                            method="post"
-                        >
-
-
-                            <input
-                                type="hidden"
-                                name="paper_id"
-                                value="<?php echo $paper['id']; ?>"
-                            >
-
-
-                            <button type="submit">
-
-                                Submit for Review
-
-                            </button>
-
-
-                        </form>
-
-
-                    <?php
-
-                    }
-
-                    ?>
-
-
-                </article>
-
-
-            <?php
-
-            }
-
-            ?>
-
-
-
-            <!-- My Projects -->
-
-            <h2>
-
-                My Projects
-
-                (<?php echo count($projects); ?>)
-
-            </h2>
-
-
-            <?php
-
-            foreach ($projects as $project) {
-
-            ?>
-
-
-                <div class="box">
-
-
-                    <a href="project_details.php?id=<?php echo $project['id']; ?>">
-
-                        <?php
-                        echo e($project['title']);
-                        ?>
-
-                    </a>
-
-
-                    <span class="tag">
-
-                        <?php
-                        echo e($project['approval']);
-                        ?>
-
-                    </span>
-
-
-                </div>
-
-
-            <?php
-
-            }
-
-            ?>
-
-
-        </div>
-
-
-    </main>
-
-
-</div>
-
-
-</body>
-
-</html>
+<!doctype html>
+<html lang="en"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>My Research Profile · UIU Research Hub</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"><link rel="stylesheet" href="portal.css">
+<style>
+.profile-hero{position:relative;overflow:hidden;padding:31px;border-radius:20px;background:linear-gradient(125deg,#102a43,#2457d6);color:#fff}.profile-hero:after{content:'';position:absolute;width:250px;height:250px;right:-85px;top:-110px;border:40px solid rgba(255,255,255,.08);border-radius:50%}.profile-intro{position:relative;z-index:1;display:flex;gap:20px;align-items:center}.profile-avatar{display:grid;place-items:center;width:74px;height:74px;flex:0 0 74px;border-radius:22px;background:#fff;color:#1c4fad;font-size:29px;font-weight:800}.profile-hero h1{margin:0;font-size:clamp(28px,4vw,41px);letter-spacing:-.04em}.profile-hero p{margin:5px 0 0;color:#d9e7ff}.profile-actions{position:relative;z-index:1;display:flex;gap:9px;flex-wrap:wrap;margin-top:24px}.profile-actions a{padding:10px 13px;border:1px solid rgba(255,255,255,.38);border-radius:10px;color:white;text-decoration:none;font-weight:700;font-size:13px}.profile-actions a:first-child{background:#fff;color:#173d78;border-color:#fff}.profile-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin:18px 0}.profile-stat{padding:18px;border:1px solid #e5e9f0;border-radius:15px;background:#fff}.profile-stat strong{display:block;color:#2457d6;font-size:28px;letter-spacing:-.04em}.profile-stat span{color:#667085;font-size:13px}.profile-layout{display:grid;grid-template-columns:minmax(0,1.55fr) minmax(275px,.85fr);gap:18px}.section-title{display:flex;justify-content:space-between;align-items:center;gap:10px}.research-item{padding:17px 0;border-bottom:1px solid #e5e9f0}.research-item:last-child{border:0;padding-bottom:0}.research-item h3{margin:0 0 7px;font-size:17px}.research-item p{margin:7px 0;color:#667085;font-size:14px;line-height:1.55}.item-meta{display:flex;gap:7px;flex-wrap:wrap;align-items:center;font-size:12px;color:#667085}.status{display:inline-block;padding:5px 9px;border-radius:999px;font-weight:750;font-size:11px;text-transform:capitalize}.status-approved{background:#ecfdf3;color:#067647}.status-pending{background:#fff7e6;color:#9a6700}.status-draft{background:#eef2f6;color:#475467}.status-rejected{background:#fef3f2;color:#b42318}.request-item{padding:13px 0;border-bottom:1px solid #e5e9f0}.request-item:last-child{border:0}.request-item strong,.request-item span{display:block}.request-item span{margin-top:4px;color:#667085;font-size:13px}@media(max-width:900px){.profile-grid{grid-template-columns:repeat(2,1fr)}.profile-layout{grid-template-columns:1fr}}@media(max-width:520px){.profile-hero{padding:23px}.profile-intro{align-items:flex-start}.profile-avatar{width:54px;height:54px;flex-basis:54px;border-radius:16px;font-size:22px}.profile-grid{grid-template-columns:1fr 1fr}.profile-stat{padding:14px}}
+.status-approved{background:#ecfdf3!important;color:#067647!important}.status-pending{background:#fff7e6!important;color:#9a6700!important}.status-draft{background:#eef2f6!important;color:#475467!important}.status-rejected{background:#fef3f2!important;color:#b42318!important}</style></head>
+<body class="portal-page"><div class="app-container portal-layout"><?php require __DIR__ . '/backend/sidebar.php'; ?><main class="main-content"><div class="live-content"><?php show_message(); ?><?php if ($error): ?><p class="notice error"><?= e($error) ?></p><?php endif; ?>
+<section class="profile-hero"><div class="profile-intro"><div class="profile-avatar"><?= e(strtoupper(substr($user['full_name'], 0, 1))) ?></div><div><p class="eyebrow">RESEARCHER PROFILE</p><h1><?= e($user['full_name']) ?></h1><p><?= e(ucfirst($user['role'])) ?> · <?= e($user['department']) ?></p><p><?= e($user['email']) ?></p></div></div><div class="profile-actions"><a href="settings.php"><i class="fa-solid fa-pen"></i> Edit profile</a><a href="submit-paper.php"><i class="fa-solid fa-arrow-up-from-bracket"></i> Submit a paper</a><?php if ($user['cv_path'] !== ''): ?><a href="download.php?type=cv&amp;id=<?= (int) $user['id'] ?>"><i class="fa-solid fa-file-arrow-down"></i> Download CV</a><?php endif; ?></div></section>
+<div class="profile-grid"><div class="profile-stat"><strong><?= $paper_counts['approved'] ?></strong><span>Published papers</span></div><div class="profile-stat"><strong><?= $paper_counts['pending'] ?></strong><span>Under paper review</span></div><div class="profile-stat"><strong><?= count($projects) ?></strong><span>Projects led</span></div><div class="profile-stat"><strong><?= $incoming_count ?></strong><span>Join requests to review</span></div></div>
+<div class="profile-layout"><div>
+<section class="box"><div class="section-title"><div><h2>About my research</h2><p class="muted">The public-facing summary of your work and interests.</p></div><a class="button secondary" href="settings.php">Edit</a></div><p><?= $user['bio'] !== '' ? nl2br(e($user['bio'])) : 'Add a short bio, methods, and research interests so potential collaborators can understand your focus.' ?></p></section>
+<section class="box"><div class="section-title"><div><h2>My papers</h2><p class="muted">Track each submission from draft to editorial decision.</p></div><a href="submit-paper.php">New submission</a></div><?php if (!$papers): ?><p class="empty">No paper submissions yet. Start with a draft or submit your completed work for review.</p><?php endif; ?><?php foreach ($papers as $paper): ?><article class="research-item"><div class="item-meta"><span class="status status-<?= e($paper['status']) ?>"><?= e($paper['status']) ?></span><span><?= e($paper['category']) ?></span><span><?= e(substr($paper['created_at'], 0, 10)) ?></span></div><h3><?= e($paper['title']) ?></h3><p><?= e(strlen($paper['abstract']) > 180 ? substr($paper['abstract'], 0, 177) . '...' : $paper['abstract']) ?></p><div class="item-meta"><?php if ($paper['status'] === 'pending'): ?><span>Editorial review in progress</span><?php elseif ($paper['status'] === 'approved'): ?><span>Published in the portal collection</span><?php elseif ($paper['status'] === 'rejected'): ?><span>Update the draft, then resubmit for review</span><?php else: ?><span>Draft is private until submitted</span><?php endif; ?><?php if ($paper['file_path']): ?><a href="download.php?type=paper&amp;id=<?= (int) $paper['id'] ?>">Download PDF</a><?php endif; ?><?php if (in_array($paper['status'], ['draft','rejected'], true)): ?><form class="inline" method="post"><input type="hidden" name="action" value="submit_paper"><input type="hidden" name="paper_id" value="<?= (int) $paper['id'] ?>"><button>Submit for review</button></form><?php endif; ?></div></article><?php endforeach; ?></section>
+</div><aside>
+<section class="box"><h2>Projects I lead</h2><?php if (!$projects): ?><p class="muted">You have not started a project yet.</p><a class="button" href="research-projects.php">Start a project</a><?php endif; ?><?php foreach ($projects as $project): ?><article class="request-item"><span class="status status-<?= e($project['approval']) ?>"><?= e($project['approval']) ?></span><strong><a href="project-details.php?id=<?= (int) $project['id'] ?>"><?= e($project['title']) ?></a></strong><span><?= e($project['status']) ?> · <?= e($project['department']) ?></span></article><?php endforeach; ?></section>
+<section class="box"><h2>My join requests</h2><?php if (!$requests): ?><p class="muted">When you request to join a project, its review status will appear here.</p><?php endif; ?><?php foreach ($requests as $request): ?><article class="request-item"><span class="status status-<?= e($request['status']) ?>"><?= e($request['status']) ?></span><strong><a href="project-details.php?id=<?= (int) $request['project_id'] ?>"><?= e($request['title']) ?></a></strong><span><?= e($request['department']) ?> · requested <?= e(substr($request['created_at'], 0, 10)) ?></span></article><?php endforeach; ?></section>
+<section class="box"><h2>Next steps</h2><p class="muted">Keep your profile current, submit papers for review, and use project requests to find the right collaboration.</p><p><a href="research-explorer.php?source=portal">Explore published research →</a></p></section>
+</aside></div></div></main></div></body></html>

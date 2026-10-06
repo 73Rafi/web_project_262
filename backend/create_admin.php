@@ -24,7 +24,7 @@ try {
         throw new InvalidArgumentException('Passwords do not match.');
     }
     create_admin_account($conn, $name, $email, $password);
-    echo "Admin account created. Open signIn.php and sign in with this email and password.\n";
+    echo "Admin account created. Open sign-in.php and sign in with this email and password.\n";
 } catch (InvalidArgumentException $error) {
     fwrite(STDERR, $error->getMessage() . "\n");
     exit(1);

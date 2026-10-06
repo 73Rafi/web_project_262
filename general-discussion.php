@@ -1,7 +1,7 @@
 <?php
 require __DIR__ . '/backend/common.php';
 require_login();
-$filter = 'Tools & Software';
+$filter = 'General Discussion';
 
 $categories = ['General Discussion', 'Research Methods', 'Career & Funding', 'Paper Reviews', 'Tools & Software'];
 $error = '';
@@ -10,12 +10,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $title = required_text('title', 'Title');
         $category = input('category');
         $description = required_text('description', 'Description', 10000);
-        if (!in_array($category, $categories, true)) { throw new InvalidArgumentException('Choose a category.'); }
+        if (!in_array($category, $categories, true)) {
+            throw new InvalidArgumentException('Choose a category.');
+        }
         $conn->execute_query('INSERT INTO discussions (user_id, title, category, description) VALUES (?, ?, ?, ?)', [$user['id'], $title, $category, $description]);
         $id = $conn->insert_id;
         flash('Discussion posted.');
         go('discussion.php?id=' . $id);
-    } catch (Throwable $exception) { $error = page_error($exception); }
+    } catch (Throwable $exception) {
+        $error = page_error($exception);
+    }
 }
 $discussions = $conn->execute_query('SELECT d.*, u.full_name, (SELECT COUNT(*) FROM replies r WHERE r.discussion_id = d.id) AS reply_count FROM discussions d JOIN users u ON u.id = d.user_id WHERE (? = \'\' OR d.category = ?) ORDER BY d.id DESC LIMIT 100', [$filter, $filter])->fetch_all(MYSQLI_ASSOC);
 
@@ -26,7 +30,7 @@ $discussions = $conn->execute_query('SELECT d.*, u.full_name, (SELECT COUNT(*) F
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>UIU Research Portal - Tools and Software</title>
+    <title>UIU Research Portal - General Discussion</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -270,7 +274,8 @@ $discussions = $conn->execute_query('SELECT d.*, u.full_name, (SELECT COUNT(*) F
         }
     </style>
 
-<link rel="stylesheet" href="portal.css"></head>
+    <link rel="stylesheet" href="portal.css">
+</head>
 
 <body class="portal-page">
     <div class="app-container">
@@ -281,20 +286,33 @@ $discussions = $conn->execute_query('SELECT d.*, u.full_name, (SELECT COUNT(*) F
 
 
             <!-- Main Content Area -->
-            <main class="content-area"><div class="live-content">
-<?php show_message(); ?>
+            <main class="content-area">
+                <div class="live-content">
+                    <?php show_message(); ?>
 
-<h1><?= e($filter ?: 'Community Forum') ?></h1><p>Ask questions and connect with researchers.</p>
-<div class="box row"><a href="Community_Forum.php">All</a><a href="general_discussion.php">General Discussion</a><a href="research_methods.php">Research Methods</a><a href="career_funding.php">Career &amp; Funding</a><a href="paper_reviews.php">Paper Reviews</a><a href="tools_software.php">Tools &amp; Software</a></div>
-<?php if ($error): ?><p class="notice error"><?= e($error) ?></p><?php endif; ?>
-<details class="box" <?= $error ? 'open' : '' ?>><summary>New Discussion</summary><form method="post">
-<label class="field">Title<input name="title" maxlength="255" value="<?= e(input('title')) ?>" required></label>
-<label class="field">Category<select name="category"><?php foreach ($categories as $category): ?><option <?= (input('category') ?: $filter) === $category ? 'selected' : '' ?>><?= e($category) ?></option><?php endforeach; ?></select></label>
-<label class="field">Description<textarea name="description" maxlength="10000" required><?= e(input('description')) ?></textarea></label><button>Post Discussion</button></form></details>
-<?php if (!$discussions): ?><p class="box empty">No discussions yet. Start the first one.</p><?php endif; ?>
-<?php foreach ($discussions as $discussion): ?><article class="box"><h2><a href="discussion.php?id=<?= $discussion['id'] ?>"><?= e($discussion['title']) ?></a></h2><p class="muted"><?= e($discussion['full_name']) ?> · <?= e($discussion['category']) ?> · <?= e($discussion['created_at']) ?></p><p><?= $discussion['reply_count'] ?> replies</p></article><?php endforeach; ?>
-</div></main>
+                    <h1><?= e($filter ?: 'Community Forum') ?></h1>
+                    <p>Ask questions and connect with researchers.</p>
+                    <div class="box row"><a href="community-forum.php">All</a><a href="general-discussion.php">General Discussion</a><a href="research-methods.php">Research Methods</a><a href="funding-opportunities.php">Career &amp; Funding</a><a href="paper-reviews.php">Paper Reviews</a><a href="research-tools.php">Tools &amp; Software</a></div>
+                    <?php if ($error): ?><p class="notice error"><?= e($error) ?></p><?php endif; ?>
+                    <details class="box" <?= $error ? 'open' : '' ?>>
+                        <summary>New Discussion</summary>
+                        <form method="post">
+                            <label class="field">Title<input name="title" maxlength="255" value="<?= e(input('title')) ?>" required></label>
+                            <label class="field">Category<select name="category"><?php foreach ($categories as $category): ?><option <?= (input('category') ?: $filter) === $category ? 'selected' : '' ?>><?= e($category) ?></option><?php endforeach; ?></select></label>
+                            <label class="field">Description<textarea name="description" maxlength="10000" required><?= e(input('description')) ?></textarea></label><button>Post Discussion</button>
+                        </form>
+                    </details>
+                    <?php if (!$discussions): ?><p class="box empty">No discussions yet. Start the first one.</p><?php endif; ?>
+                    <?php foreach ($discussions as $discussion): ?><article class="box">
+                            <h2><a href="discussion.php?id=<?= $discussion['id'] ?>"><?= e($discussion['title']) ?></a></h2>
+                            <p class="muted"><?= e($discussion['full_name']) ?> · <?= e($discussion['category']) ?> · <?= e($discussion['created_at']) ?></p>
+                            <p><?= $discussion['reply_count'] ?> replies</p>
+                        </article><?php endforeach; ?>
+                </div>
+            </main>
         </div>
     </div>
 
-</body></html>
+</body>
+
+</html>
